@@ -1,0 +1,101 @@
+swagger: "2.0"
+info:
+  description: Redirector configure API
+  version: "1.0.0"
+  title: "Redirector API"
+  contact:
+    email: "c0va23@gmail.com"
+  license:
+    name: "MIT"
+
+basePath: "/_api"
+
+paths:
+  /host_rules:
+    get:
+      summary: "List host rules"
+      operationId: listHostRules
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: "List host rules"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/HostRule"
+    post:
+      summary: "Create or replace host rules"
+      description: "Update host rule if host rule exists or create host rule"
+      operationId: replaceHostRule
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+        - name: host_rule
+          in: body
+          schema:
+            $ref: '#/definitions/HostRule'
+          required: true
+      responses:
+        400:
+          description: "Invalid JSON structure"
+        422:
+          description: "Invalid validation"
+        200:
+          description: "Create HostRule"
+          schema:
+            $ref: "#/definitions/HostRule"
+
+definitions:
+  Target:
+    type: object
+    properties:
+      target_path:
+        type: string
+        pattern: '/.*'
+      http_code:
+        type: number
+        format: int32
+        minimum: 300
+        maximum: 399
+    required:
+    - target_path
+    - http_code
+
+  HostRule:
+    type: object
+    properties:
+      host:
+        type: string
+      default_target:
+        $ref: '#/definitions/Target'
+      rules:
+        type: "array"
+        items:
+          $ref: "#/definitions/Rule"
+    required:
+    - host
+    - default_target
+    - rules
+
+  Rule:
+    type: "object"
+    properties:
+      source_path_pattern:
+        type: string
+        description: "Regex for match source path"
+      target:
+        $ref: '#/definitions/Target'
+      active_from:
+        type: "string"
+        format: "date-time"
+      active_to:
+        type: "string"
+        format: "date-time"
+    required:
+    - source_path_pattern
+    - target
