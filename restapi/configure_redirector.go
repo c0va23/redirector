@@ -37,6 +37,9 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	api.ListHostRulesHandler = operations.ListHostRulesHandlerFunc(func(params operations.ListHostRulesParams) middleware.Responder {
 		return middleware.NotImplemented("operation .ListHostRules has not yet been implemented")
 	})
+	api.RedirectHandler = operations.RedirectHandlerFunc(func(params operations.RedirectParams) middleware.Responder {
+		return middleware.NotImplemented("operation .Redirect has not yet been implemented")
+	})
 	api.ReplaceHostRuleHandler = operations.ReplaceHostRuleHandlerFunc(func(params operations.ReplaceHostRuleParams) middleware.Responder {
 		return middleware.NotImplemented("operation .ReplaceHostRule has not yet been implemented")
 	})
