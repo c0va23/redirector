@@ -24,6 +24,8 @@ paths:
             type: array
             items:
               $ref: "#/definitions/HostRule"
+        500:
+          $ref: '#/responses/InternalServerError'
     post:
       summary: "Create or replace host rules"
       description: "Update host rule if host rule exists or create host rule"
@@ -47,6 +49,8 @@ paths:
           description: "Create HostRule"
           schema:
             $ref: "#/definitions/HostRule"
+        500:
+          $ref: '#/responses/InternalServerError'
 
   /{source_path}:
     parameters:
@@ -69,12 +73,20 @@ paths:
       responses:
         404:
           description: 'Response when rule for source_path and host not found'
+        500:
+          $ref: '#/responses/InternalServerError'
         default:
           description: |
             Response when rule for `source_path` and host is found
 
             Code of response equal `http_code` from `HostRule.Target`.
             And header `Location` equal `target_paht` from `HostRule.target`.
+
+responses:
+  InternalServerError:
+    description: Internal server error
+    schema:
+      $ref: '#/definitions/ServerError'
 
 definitions:
   Target:
@@ -125,3 +137,9 @@ definitions:
     required:
     - source_path_pattern
     - target
+
+  ServerError:
+    type: "object"
+    properties:
+      message:
+        type: string
