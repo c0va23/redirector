@@ -9,8 +9,11 @@ import (
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	cors "github.com/rs/cors"
 	graceful "github.com/tylerb/graceful"
 
+	"github.com/c0va23/redirector/controllers"
+	"github.com/c0va23/redirector/memstore"
 	"github.com/c0va23/redirector/restapi/operations"
 )
 
@@ -21,6 +24,9 @@ func configureFlags(api *operations.RedirectorAPI) {
 }
 
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
+	store := memstore.NewMemStore()
+	controller := controllers.NewController(&store)
+
 	// configure the api here
 	api.ServeError = errors.ServeError
 
@@ -34,15 +40,11 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.ListHostRulesHandler = operations.ListHostRulesHandlerFunc(func(params operations.ListHostRulesParams) middleware.Responder {
-		return middleware.NotImplemented("operation .ListHostRules has not yet been implemented")
-	})
+	api.ListHostRulesHandler = operations.ListHostRulesHandlerFunc(controller.ListHostRulesHandler)
 	api.RedirectHandler = operations.RedirectHandlerFunc(func(params operations.RedirectParams) middleware.Responder {
 		return middleware.NotImplemented("operation .Redirect has not yet been implemented")
 	})
-	api.ReplaceHostRuleHandler = operations.ReplaceHostRuleHandlerFunc(func(params operations.ReplaceHostRuleParams) middleware.Responder {
-		return middleware.NotImplemented("operation .ReplaceHostRule has not yet been implemented")
-	})
+	api.ReplaceHostRuleHandler = operations.ReplaceHostRuleHandlerFunc(controller.ReplaceHostRulesHandler)
 
 	api.ServerShutdown = func() {}
 
@@ -70,5 +72,5 @@ func setupMiddlewares(handler http.Handler) http.Handler {
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
-	return handler
+	return cors.AllowAll().Handler(handler)
 }
