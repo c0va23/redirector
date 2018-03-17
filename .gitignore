@@ -1,4 +1,5 @@
 cmd/redirector-server/
 models/
 restapi/*
-!restapi/configure_redirector.go
+!restapi/configure_redirector.govendor/
+vendor/
