@@ -19,7 +19,8 @@ func TestListHostRulesHandler_Success(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	c := controllers.NewController(s)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
 
 	hostRules := make([]models.HostRule, 0, 3)
 	for i := 0; i < cap(hostRules); i++ {
@@ -40,7 +41,8 @@ func TestListHostRulesHandler_Error(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	c := controllers.NewController(s)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
 
 	err := fmt.Errorf("ListHostRulesError")
 
@@ -59,7 +61,8 @@ func TestReplaceHostRuleHandler_Success(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	c := controllers.NewController(s)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
 
 	newHostRule := factories.HostRuleFactory.MustCreate().(models.HostRule)
 
@@ -81,7 +84,8 @@ func TestReplaceHostRuleHandler_Error(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	c := controllers.NewController(s)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
 
 	newHostRule := factories.HostRuleFactory.MustCreate().(models.HostRule)
 	err := fmt.Errorf("ReplaceHostRuleError")
@@ -104,7 +108,8 @@ func TestRedirectHandler_ServerError(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	c := controllers.NewController(s)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
 
 	err := fmt.Errorf("GetHostRulesErr")
 	host := fake.DomainName()
@@ -125,7 +130,8 @@ func TestRedirectHandler_NotFound(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	c := controllers.NewController(s)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
 
 	host := fake.DomainName()
 	s.On("GetHostRules", host).Return(nil, nil)
@@ -144,11 +150,13 @@ func TestRedirectHandler_Success(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	c := controllers.NewController(s)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
 
 	path := factories.GeneratePath()
 	hostRule := factories.HostRuleFactory.MustCreate().(models.HostRule)
 	s.On("GetHostRules", hostRule.Host).Return(&hostRule, nil)
+	r.On("Resolve", hostRule, path).Return(hostRule.DefaultTarget)
 
 	a.Equal(
 		c.RedirectHandler(operations.RedirectParams{

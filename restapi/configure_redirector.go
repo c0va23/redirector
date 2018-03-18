@@ -14,6 +14,7 @@ import (
 
 	"github.com/c0va23/redirector/controllers"
 	"github.com/c0va23/redirector/memstore"
+	"github.com/c0va23/redirector/resolver"
 	"github.com/c0va23/redirector/restapi/operations"
 )
 
@@ -25,7 +26,8 @@ func configureFlags(api *operations.RedirectorAPI) {
 
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	store := memstore.NewMemStore()
-	controller := controllers.NewController(&store)
+	resolver := resolver.NewSimpleResolver()
+	controller := controllers.NewController(&store, &resolver)
 
 	// configure the api here
 	api.ServeError = errors.ServeError

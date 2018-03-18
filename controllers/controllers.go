@@ -4,19 +4,22 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/c0va23/redirector/models"
+	"github.com/c0va23/redirector/resolver"
 	"github.com/c0va23/redirector/restapi/operations"
 	"github.com/c0va23/redirector/store"
 )
 
 // Controller implement methods into restapi
 type Controller struct {
-	store store.Store
+	store    store.Store
+	resolver resolver.Resolver
 }
 
 // NewController initialize new controller
-func NewController(store store.Store) Controller {
+func NewController(store store.Store, resolver resolver.Resolver) Controller {
 	return Controller{
-		store: store,
+		store:    store,
+		resolver: resolver,
 	}
 }
 
@@ -60,12 +63,8 @@ func (c *Controller) RedirectHandler(params operations.RedirectParams) middlewar
 		return operations.NewRedirectNotFound()
 	}
 
-	httpCode, targetPath := resolveRedirect(*hostRules)
+	target := c.resolver.Resolve(*hostRules, params.SourcePath)
 
-	return operations.NewRedirectDefault(int(httpCode)).
-		WithLocation(targetPath)
-}
-
-func resolveRedirect(hostRule models.HostRule) (httpCode int32, targetPath string) {
-	return hostRule.DefaultTarget.HTTPCode, hostRule.DefaultTarget.TargetPath
+	return operations.NewRedirectDefault(int(target.HTTPCode)).
+		WithLocation(target.TargetPath)
 }
