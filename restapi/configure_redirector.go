@@ -5,10 +5,10 @@ package restapi
 import (
 	"crypto/tls"
 	"net/http"
+	"strings"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
-	middleware "github.com/go-openapi/runtime/middleware"
 	cors "github.com/rs/cors"
 	graceful "github.com/tylerb/graceful"
 
@@ -41,9 +41,7 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.ListHostRulesHandler = operations.ListHostRulesHandlerFunc(controller.ListHostRulesHandler)
-	api.RedirectHandler = operations.RedirectHandlerFunc(func(params operations.RedirectParams) middleware.Responder {
-		return middleware.NotImplemented("operation .Redirect has not yet been implemented")
-	})
+	api.RedirectHandler = operations.RedirectHandlerFunc(controller.RedirectHandler)
 	api.ReplaceHostRuleHandler = operations.ReplaceHostRuleHandlerFunc(controller.ReplaceHostRulesHandler)
 
 	api.ServerShutdown = func() {}
@@ -63,10 +61,19 @@ func configureTLS(tlsConfig *tls.Config) {
 func configureServer(s *graceful.Server, scheme, addr string) {
 }
 
+func returnHostHeader(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		hostParts := strings.Split(req.Host, ":")
+		host := hostParts[0]
+		req.Header.Add("Host", host)
+		next.ServeHTTP(res, req)
+	})
+}
+
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.
 // The middleware executes after routing but before authentication, binding and validation
 func setupMiddlewares(handler http.Handler) http.Handler {
-	return handler
+	return returnHostHeader(handler)
 }
 
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.

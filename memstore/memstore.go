@@ -47,3 +47,14 @@ func (memStore *MemStore) ReplaceHostRule(newHostRule models.HostRule) error {
 	}
 	return nil
 }
+
+// GetHostRules return HostRule by host
+func (memStore *MemStore) GetHostRules(host string) (*models.HostRule, error) {
+	for _, hostRule := range memStore.hostRules {
+		if host == hostRule.Host {
+			return &hostRule, nil
+		}
+	}
+
+	return nil, nil
+}

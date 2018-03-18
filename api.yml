@@ -81,6 +81,10 @@ paths:
 
             Code of response equal `http_code` from `HostRule.Target`.
             And header `Location` equal `target_paht` from `HostRule.target`.
+          headers:
+            Location:
+              description: Redirect target path
+              type: string
 
 responses:
   InternalServerError:

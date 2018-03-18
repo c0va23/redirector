@@ -45,3 +45,26 @@ func (c *Controller) ReplaceHostRulesHandler(params operations.ReplaceHostRulePa
 	return operations.NewReplaceHostRuleOK().
 		WithPayload(&params.HostRule)
 }
+
+// RedirectHandler is handler for Redirect
+func (c *Controller) RedirectHandler(params operations.RedirectParams) middleware.Responder {
+	hostRules, err := c.store.GetHostRules(params.Host)
+
+	if nil != err {
+		serverError := models.ServerError{Message: err.Error()}
+		return operations.NewReplaceHostRuleInternalServerError().WithPayload(&serverError)
+	}
+
+	if nil == hostRules {
+		return operations.NewRedirectNotFound()
+	}
+
+	httpCode, targetPath := resolveRedirect(*hostRules)
+
+	return operations.NewRedirectDefault(int(httpCode)).
+		WithLocation(targetPath)
+}
+
+func resolveRedirect(hostRule models.HostRule) (httpCode int32, targetPath string) {
+	return hostRule.DefaultTarget.HTTPCode, hostRule.DefaultTarget.TargetPath
+}
