@@ -52,7 +52,8 @@ func (c *Controller) RedirectHandler(params operations.RedirectParams) middlewar
 
 	if nil != err {
 		serverError := models.ServerError{Message: err.Error()}
-		return operations.NewReplaceHostRuleInternalServerError().WithPayload(&serverError)
+		return operations.NewRedirectInternalServerError().
+			WithPayload(&serverError)
 	}
 
 	if nil == hostRules {
