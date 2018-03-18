@@ -34,7 +34,7 @@ func (memStore *MemStore) ReplaceHostRule(newHostRule models.HostRule) error {
 
 	updated := false
 	for _, hostRule := range memStore.hostRules {
-		if *newHostRule.Host == *hostRule.Host {
+		if newHostRule.Host == hostRule.Host {
 			log.Printf("Update %+v => %+v", newHostRule, hostRule)
 			hostRule = newHostRule
 			updated = true

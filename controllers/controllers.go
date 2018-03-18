@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"log"
-
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/c0va23/redirector/models"
@@ -25,23 +23,19 @@ func NewController(store store.Store) Controller {
 // ListHostRulesHandler is handler for ListHostRules
 func (c *Controller) ListHostRulesHandler(params operations.ListHostRulesParams) middleware.Responder {
 	hostRules, err := c.store.ListHostRules()
+
 	if nil != err {
 		serverError := models.ServerError{Message: err.Error()}
 		return operations.NewListHostRulesInternalServerError().WithPayload(&serverError)
 	}
 
-	log.Printf("%+v", hostRules)
-	listHostRules := make([]*models.HostRule, 0, len(hostRules))
-
-	for _, hostRule := range hostRules {
-		listHostRules = append(listHostRules, &hostRule)
-	}
-	return operations.NewListHostRulesOK().WithPayload(listHostRules)
+	return operations.NewListHostRulesOK().
+		WithPayload(hostRules)
 }
 
 // ReplaceHostRulesHandler is handler for ReplaceHostRules
 func (c *Controller) ReplaceHostRulesHandler(params operations.ReplaceHostRuleParams) middleware.Responder {
-	err := c.store.ReplaceHostRule(*params.HostRule)
+	err := c.store.ReplaceHostRule(params.HostRule)
 
 	if nil != err {
 		serverError := models.ServerError{Message: err.Error()}
@@ -49,5 +43,5 @@ func (c *Controller) ReplaceHostRulesHandler(params operations.ReplaceHostRulePa
 	}
 
 	return operations.NewReplaceHostRuleOK().
-		WithPayload(params.HostRule)
+		WithPayload(&params.HostRule)
 }

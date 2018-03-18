@@ -91,24 +91,30 @@ responses:
 definitions:
   Target:
     type: object
+    x-nullable: false
     properties:
       target_path:
         type: string
         pattern: '/.*'
+        x-nullable: false
       http_code:
         type: number
         format: int32
         minimum: 300
         maximum: 399
+        x-nullable: false
     required:
     - target_path
     - http_code
 
   HostRule:
     type: object
+    x-nullable: false
     properties:
       host:
         type: string
+        format: idn-hostname
+        x-nullable: false
       default_target:
         $ref: '#/definitions/Target'
       rules:
@@ -122,18 +128,22 @@ definitions:
 
   Rule:
     type: "object"
+    x-nullable: false
     properties:
       source_path_pattern:
         type: string
         description: "Regex for match source path"
+        x-nullable: false
       target:
         $ref: '#/definitions/Target'
       active_from:
         type: "string"
         format: "date-time"
+        x-nullable: true
       active_to:
         type: "string"
         format: "date-time"
+        x-nullable: true
     required:
     - source_path_pattern
     - target
