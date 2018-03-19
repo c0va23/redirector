@@ -1,7 +1,6 @@
 package memstore
 
 import (
-	"log"
 	"sync"
 
 	"github.com/c0va23/redirector/models"
@@ -34,17 +33,15 @@ func (memStore *MemStore) ReplaceHostRules(newHostRules models.HostRules) error 
 	defer memStore.Unlock()
 
 	updated := false
-	for _, hostRules := range memStore.listHostRules {
+	for index, hostRules := range memStore.listHostRules {
 		if newHostRules.Host == hostRules.Host {
-			log.Printf("Update %+v => %+v", newHostRules, hostRules)
-			hostRules = newHostRules
+			memStore.listHostRules[index] = newHostRules
 			updated = true
 		}
 	}
 
 	if !updated {
 		memStore.listHostRules = append(memStore.listHostRules, newHostRules)
-		log.Printf("Append %+v", memStore.listHostRules)
 	}
 	return nil
 }
