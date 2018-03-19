@@ -22,16 +22,16 @@ func TestListHostRulesHandler_Success(t *testing.T) {
 	r := new(mocks.ResolverMock)
 	c := controllers.NewController(s, r)
 
-	hostRules := make([]models.HostRule, 0, 3)
-	for i := 0; i < cap(hostRules); i++ {
-		hostRule := factories.HostRuleFactory.MustCreate().(models.HostRule)
-		hostRules = append(hostRules, hostRule)
+	listHostRules := make([]models.HostRules, 0, 3)
+	for i := 0; i < cap(listHostRules); i++ {
+		hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
+		listHostRules = append(listHostRules, hostRules)
 	}
-	s.On("ListHostRules").Return(hostRules, nil)
+	s.On("ListHostRules").Return(listHostRules, nil)
 
 	a.Equal(
 		c.ListHostRulesHandler(operations.ListHostRulesParams{}),
-		operations.NewListHostRulesOK().WithPayload(hostRules),
+		operations.NewListHostRulesOK().WithPayload(listHostRules),
 	)
 
 	s.AssertExpectations(t)
@@ -46,7 +46,7 @@ func TestListHostRulesHandler_Error(t *testing.T) {
 
 	err := fmt.Errorf("ListHostRulesError")
 
-	s.On("ListHostRules").Return([]models.HostRule{}, err)
+	s.On("ListHostRules").Return([]models.HostRules{}, err)
 
 	a.Equal(
 		c.ListHostRulesHandler(operations.ListHostRulesParams{}),
@@ -57,47 +57,47 @@ func TestListHostRulesHandler_Error(t *testing.T) {
 	s.AssertExpectations(t)
 }
 
-func TestReplaceHostRuleHandler_Success(t *testing.T) {
+func TestReplaceHostRulesHandler_Success(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
 	r := new(mocks.ResolverMock)
 	c := controllers.NewController(s, r)
 
-	newHostRule := factories.HostRuleFactory.MustCreate().(models.HostRule)
+	newHostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
 
-	s.On("ReplaceHostRule", newHostRule).Return(nil)
+	s.On("ReplaceHostRules", newHostRules).Return(nil)
 
 	a.Equal(
 		c.ReplaceHostRulesHandler(
-			operations.ReplaceHostRuleParams{
-				HostRule: newHostRule,
+			operations.ReplaceHostRulesParams{
+				HostRules: newHostRules,
 			},
 		),
-		operations.NewReplaceHostRuleOK().WithPayload(&newHostRule),
+		operations.NewReplaceHostRulesOK().WithPayload(&newHostRules),
 	)
 
 	s.AssertExpectations(t)
 }
 
-func TestReplaceHostRuleHandler_Error(t *testing.T) {
+func TestReplaceHostRulesHandler_Error(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
 	r := new(mocks.ResolverMock)
 	c := controllers.NewController(s, r)
 
-	newHostRule := factories.HostRuleFactory.MustCreate().(models.HostRule)
-	err := fmt.Errorf("ReplaceHostRuleError")
-	s.On("ReplaceHostRule", newHostRule).Return(err)
+	newHostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	err := fmt.Errorf("ReplaceHostRulesError")
+	s.On("ReplaceHostRules", newHostRules).Return(err)
 
 	a.Equal(
 		c.ReplaceHostRulesHandler(
-			operations.ReplaceHostRuleParams{
-				HostRule: newHostRule,
+			operations.ReplaceHostRulesParams{
+				HostRules: newHostRules,
 			},
 		),
-		operations.NewReplaceHostRuleInternalServerError().
+		operations.NewReplaceHostRulesInternalServerError().
 			WithPayload(&models.ServerError{Message: err.Error()}),
 	)
 
@@ -154,17 +154,17 @@ func TestRedirectHandler_Success(t *testing.T) {
 	c := controllers.NewController(s, r)
 
 	path := factories.GeneratePath()
-	hostRule := factories.HostRuleFactory.MustCreate().(models.HostRule)
-	s.On("GetHostRules", hostRule.Host).Return(&hostRule, nil)
-	r.On("Resolve", hostRule, path).Return(hostRule.DefaultTarget)
+	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	s.On("GetHostRules", hostRules.Host).Return(&hostRules, nil)
+	r.On("Resolve", hostRules, path).Return(hostRules.DefaultTarget)
 
 	a.Equal(
 		c.RedirectHandler(operations.RedirectParams{
-			Host:       hostRule.Host,
+			Host:       hostRules.Host,
 			SourcePath: path,
 		}),
-		operations.NewRedirectDefault(int(hostRule.DefaultTarget.HTTPCode)).
-			WithLocation(hostRule.DefaultTarget.TargetPath),
+		operations.NewRedirectDefault(int(hostRules.DefaultTarget.HTTPCode)).
+			WithLocation(hostRules.DefaultTarget.Path),
 	)
 
 	s.AssertExpectations(t)

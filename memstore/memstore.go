@@ -1,58 +1,59 @@
 package memstore
 
 import (
-	"github.com/c0va23/redirector/models"
 	"log"
 	"sync"
+
+	"github.com/c0va23/redirector/models"
 )
 
 // MemStore is in-memory implementation of store.Store
 type MemStore struct {
 	sync.RWMutex
-	hostRules []models.HostRule
+	listHostRules []models.HostRules
 }
 
 // NewMemStore create new MemStore
 func NewMemStore() MemStore {
 	return MemStore{
-		RWMutex:   sync.RWMutex{},
-		hostRules: []models.HostRule{},
+		RWMutex:       sync.RWMutex{},
+		listHostRules: []models.HostRules{},
 	}
 }
 
 // ListHostRules return list of host rules from MemStore
-func (memStore *MemStore) ListHostRules() ([]models.HostRule, error) {
+func (memStore *MemStore) ListHostRules() ([]models.HostRules, error) {
 	memStore.RLock()
 	defer memStore.RUnlock()
-	return memStore.hostRules, nil
+	return memStore.listHostRules, nil
 }
 
-// ReplaceHostRule replace or create host rule into MemStore
-func (memStore *MemStore) ReplaceHostRule(newHostRule models.HostRule) error {
+// ReplaceHostRules replace or create host rule into MemStore
+func (memStore *MemStore) ReplaceHostRules(newHostRules models.HostRules) error {
 	memStore.Lock()
 	defer memStore.Unlock()
 
 	updated := false
-	for _, hostRule := range memStore.hostRules {
-		if newHostRule.Host == hostRule.Host {
-			log.Printf("Update %+v => %+v", newHostRule, hostRule)
-			hostRule = newHostRule
+	for _, hostRules := range memStore.listHostRules {
+		if newHostRules.Host == hostRules.Host {
+			log.Printf("Update %+v => %+v", newHostRules, hostRules)
+			hostRules = newHostRules
 			updated = true
 		}
 	}
 
 	if !updated {
-		memStore.hostRules = append(memStore.hostRules, newHostRule)
-		log.Printf("Append %+v", memStore.hostRules)
+		memStore.listHostRules = append(memStore.listHostRules, newHostRules)
+		log.Printf("Append %+v", memStore.listHostRules)
 	}
 	return nil
 }
 
 // GetHostRules return HostRule by host
-func (memStore *MemStore) GetHostRules(host string) (*models.HostRule, error) {
-	for _, hostRule := range memStore.hostRules {
-		if host == hostRule.Host {
-			return &hostRule, nil
+func (memStore *MemStore) GetHostRules(host string) (*models.HostRules, error) {
+	for _, hostRules := range memStore.listHostRules {
+		if host == hostRules.Host {
+			return &hostRules, nil
 		}
 	}
 

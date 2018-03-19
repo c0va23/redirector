@@ -14,14 +14,14 @@ func NewSimpleResolver() SimpleResolver {
 
 // Resolve implement Resolver.Resolve
 func (r *SimpleResolver) Resolve(
-	hostRule models.HostRule,
+	hostRules models.HostRules,
 	sourcePath string,
 ) models.Target {
-	for _, rule := range hostRule.Rules {
-		if rule.SourcePathPattern == sourcePath {
+	for _, rule := range hostRules.Rules {
+		if rule.SourcePath == sourcePath {
 			return rule.Target
 		}
 	}
 
-	return hostRule.DefaultTarget
+	return hostRules.DefaultTarget
 }

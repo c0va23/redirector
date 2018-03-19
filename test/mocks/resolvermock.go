@@ -11,7 +11,7 @@ type ResolverMock struct {
 }
 
 // Resolve implement rosolver.Resolver.Resolve
-func (r *ResolverMock) Resolve(hostRule models.HostRule, sourcePath string) models.Target {
-	args := r.MethodCalled("Resolve", hostRule, sourcePath)
+func (r *ResolverMock) Resolve(hostRules models.HostRules, sourcePath string) models.Target {
+	args := r.MethodCalled("Resolve", hostRules, sourcePath)
 	return args.Get(0).(models.Target)
 }

@@ -6,5 +6,5 @@ import (
 
 // Resolver used for resolve host and path to HTTP code and new URL
 type Resolver interface {
-	Resolve(models.HostRule, string) models.Target
+	Resolve(models.HostRules, string) models.Target
 }

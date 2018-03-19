@@ -15,12 +15,12 @@ func TestSimpleResolver_NotMatchPath(t *testing.T) {
 	a := assert.New(t)
 
 	r := resolver.NewSimpleResolver()
-	hostRule := factories.HostRuleFactory.MustCreate().(models.HostRule)
+	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
 	path := factories.GeneratePath()
 
 	a.Equal(
-		r.Resolve(hostRule, path),
-		hostRule.DefaultTarget,
+		r.Resolve(hostRules, path),
+		hostRules.DefaultTarget,
 	)
 }
 
@@ -28,12 +28,12 @@ func TestSimpleResolver_MatchPath(t *testing.T) {
 	a := assert.New(t)
 
 	r := resolver.NewSimpleResolver()
-	hostRule := factories.HostRuleFactory.MustCreate().(models.HostRule)
+	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
 
-	rule := hostRule.Rules[0]
+	rule := hostRules.Rules[0]
 
 	a.Equal(
-		r.Resolve(hostRule, rule.SourcePathPattern),
+		r.Resolve(hostRules, rule.SourcePath),
 		rule.Target,
 	)
 }

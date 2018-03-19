@@ -25,7 +25,7 @@ func NewController(store store.Store, resolver resolver.Resolver) Controller {
 
 // ListHostRulesHandler is handler for ListHostRules
 func (c *Controller) ListHostRulesHandler(params operations.ListHostRulesParams) middleware.Responder {
-	hostRules, err := c.store.ListHostRules()
+	listHostRules, err := c.store.ListHostRules()
 
 	if nil != err {
 		serverError := models.ServerError{Message: err.Error()}
@@ -33,20 +33,20 @@ func (c *Controller) ListHostRulesHandler(params operations.ListHostRulesParams)
 	}
 
 	return operations.NewListHostRulesOK().
-		WithPayload(hostRules)
+		WithPayload(listHostRules)
 }
 
 // ReplaceHostRulesHandler is handler for ReplaceHostRules
-func (c *Controller) ReplaceHostRulesHandler(params operations.ReplaceHostRuleParams) middleware.Responder {
-	err := c.store.ReplaceHostRule(params.HostRule)
+func (c *Controller) ReplaceHostRulesHandler(params operations.ReplaceHostRulesParams) middleware.Responder {
+	err := c.store.ReplaceHostRules(params.HostRules)
 
 	if nil != err {
 		serverError := models.ServerError{Message: err.Error()}
-		return operations.NewReplaceHostRuleInternalServerError().WithPayload(&serverError)
+		return operations.NewReplaceHostRulesInternalServerError().WithPayload(&serverError)
 	}
 
-	return operations.NewReplaceHostRuleOK().
-		WithPayload(&params.HostRule)
+	return operations.NewReplaceHostRulesOK().
+		WithPayload(&params.HostRules)
 }
 
 // RedirectHandler is handler for Redirect
@@ -66,5 +66,5 @@ func (c *Controller) RedirectHandler(params operations.RedirectParams) middlewar
 	target := c.resolver.Resolve(*hostRules, params.SourcePath)
 
 	return operations.NewRedirectDefault(int(target.HTTPCode)).
-		WithLocation(target.TargetPath)
+		WithLocation(target.Path)
 }

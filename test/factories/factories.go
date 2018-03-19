@@ -26,15 +26,15 @@ var TargetFactory = factory.NewFactory(models.Target{}).
 			return 300 + rand.Int31n(100), nil
 		},
 	).
-	Attr("TargetPath", pathFactory)
+	Attr("Path", pathFactory)
 
 // RuleFactory generate models.Rule
 var RuleFactory = factory.NewFactory(models.Rule{}).
 	SubFactory("Target", TargetFactory).
-	Attr("SourcePathPattern", pathFactory)
+	Attr("SourcePath", pathFactory)
 
 // HostRuleFactory generate HostRule
-var HostRuleFactory = factory.NewFactory(models.HostRule{}).
+var HostRulesFactory = factory.NewFactory(models.HostRules{}).
 	Attr(
 		"Host",
 		func(args factory.Args) (interface{}, error) {
