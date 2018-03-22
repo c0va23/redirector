@@ -9,8 +9,15 @@ import (
 
 	"github.com/c0va23/redirector/memstore"
 	"github.com/c0va23/redirector/models"
+	"github.com/c0va23/redirector/store"
 	"github.com/c0va23/redirector/test/factories"
 )
+
+func TestMemStore(t *testing.T) {
+	a := assert.New(t)
+
+	a.Implements((*store.Store)(nil), new(memstore.MemStore))
+}
 
 func TestListHostRules_Empty(t *testing.T) {
 	a := assert.New(t)
