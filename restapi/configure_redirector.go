@@ -13,21 +13,16 @@ import (
 	graceful "github.com/tylerb/graceful"
 
 	"github.com/c0va23/redirector/controllers"
-	"github.com/c0va23/redirector/memstore"
-	"github.com/c0va23/redirector/resolver"
 	"github.com/c0va23/redirector/restapi/operations"
 )
 
 //go:generate swagger generate server --target .. --name  --spec ../api.yml
 
-func configureFlags(api *operations.RedirectorAPI) {
-	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
-}
-
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
-	store := memstore.NewMemStore()
-	resolver := resolver.NewSimpleResolver()
-	controller := controllers.NewController(&store, &resolver)
+	store := buildStore()
+	resolver := buildResolver()
+
+	controller := controllers.NewController(store, resolver)
 
 	// configure the api here
 	api.ServeError = errors.ServeError

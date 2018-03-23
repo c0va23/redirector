@@ -8,8 +8,8 @@ import (
 type SimpleResolver struct{}
 
 // NewSimpleResolver create new SimpleResolver
-func NewSimpleResolver() SimpleResolver {
-	return SimpleResolver{}
+func NewSimpleResolver() *SimpleResolver {
+	return new(SimpleResolver)
 }
 
 // Resolve implement Resolver.Resolve

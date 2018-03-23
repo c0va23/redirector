@@ -13,8 +13,8 @@ type MemStore struct {
 }
 
 // NewMemStore create new MemStore
-func NewMemStore() MemStore {
-	return MemStore{
+func NewMemStore() *MemStore {
+	return &MemStore{
 		RWMutex:       sync.RWMutex{},
 		listHostRules: []models.HostRules{},
 	}

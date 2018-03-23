@@ -1,5 +1,5 @@
 cmd/redirector-server/
 models/
 restapi/*
-!restapi/configure_redirector.govendor/
+!restapi/configure_*
 vendor/
