@@ -2,7 +2,6 @@ package redisstore
 
 import (
 	"encoding/json"
-	"strings"
 
 	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/mediocregopher/radix.v2/util"
@@ -22,31 +21,51 @@ func NewRedisStore(cmder util.Cmder) RedisStore {
 	}
 }
 
-// ListHostRules implement Store.ListHostRules
-func (rs *RedisStore) ListHostRules() ([]models.HostRules, error) {
+func (rs *RedisStore) listHosts() ([]string, error) {
 	scanner := util.NewScanner(rs.Cmder, util.ScanOpts{Command: "SCAN"})
+
 	hosts := []string{}
 	for scanner.HasNext() {
 		host := scanner.Next()
 		hosts = append(hosts, host)
 	}
+
 	if err := scanner.Err(); nil != err {
 		return nil, err
 	}
 
+	return hosts, nil
+}
+
+func (rs *RedisStore) fetchHostRules(hosts []string) ([]models.HostRules, error) {
 	listHostRules := make([]models.HostRules, 0, len(hosts))
 	for _, host := range hosts {
-		hostRuleJSON, err := rs.Cmder.Cmd("GET", host).Str()
+		hostRuleJSON, err := rs.Cmder.Cmd("GET", host).Bytes()
 		if nil != err {
 			return nil, err
 		}
 
-		decoder := json.NewDecoder(strings.NewReader(hostRuleJSON))
 		var hostRules models.HostRules
-		if err := decoder.Decode(&hostRules); nil != err {
+		if err := json.Unmarshal(hostRuleJSON, &hostRules); nil != err {
 			return nil, err
 		}
+
 		listHostRules = append(listHostRules, hostRules)
+	}
+
+	return listHostRules, nil
+}
+
+// ListHostRules implement Store.ListHostRules
+func (rs *RedisStore) ListHostRules() ([]models.HostRules, error) {
+	hosts, err := rs.listHosts()
+	if nil != err {
+		return nil, err
+	}
+
+	listHostRules, err := rs.fetchHostRules(hosts)
+	if nil != err {
+		return nil, err
 	}
 
 	return listHostRules, nil
