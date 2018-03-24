@@ -15,8 +15,8 @@ type RedisStore struct {
 }
 
 // NewRedisStore create new RedisStore
-func NewRedisStore(cmder util.Cmder) RedisStore {
-	return RedisStore{
+func NewRedisStore(cmder util.Cmder) *RedisStore {
+	return &RedisStore{
 		Cmder: cmder,
 	}
 }

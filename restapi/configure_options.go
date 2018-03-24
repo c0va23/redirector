@@ -6,6 +6,7 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/c0va23/redirector/memstore"
+	"github.com/c0va23/redirector/redisstore"
 	"github.com/c0va23/redirector/resolver"
 	"github.com/c0va23/redirector/restapi/operations"
 	"github.com/c0va23/redirector/store"
@@ -30,6 +31,12 @@ func buildStore() store.Store {
 	switch appOptions.StoreType {
 	case "memory":
 		return memstore.NewMemStore()
+	case "redis":
+		client, err := redisstore.BuildRedisPool(appOptions.RedisURI)
+		if nil != err {
+			log.Fatalf("Redis error: %s", err)
+		}
+		return redisstore.NewRedisStore(client)
 	default:
 		log.Panicf("Unknown store type: %s", appOptions.StoreType)
 		return nil
