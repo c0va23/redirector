@@ -210,3 +210,67 @@ func TestReplaceHostRules_SetNotOk(t *testing.T) {
 
 	cmder.AssertExpectations(t)
 }
+
+func TestGetHostRules_Success(t *testing.T) {
+	a := assert.New(t)
+
+	sourceHostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJson, _ := json.Marshal(sourceHostRule)
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "GET", []interface{}{
+		sourceHostRule.Host,
+	}).Return(redis.NewRespSimple(string(hostRuleJson)))
+
+	rs := redisstore.NewRedisStore(cmder)
+	hostRule, err := rs.GetHostRules(sourceHostRule.Host)
+	a.Nil(err)
+	a.Equal(&sourceHostRule, hostRule)
+
+	cmder.AssertExpectations(t)
+}
+
+func TestGetHostRules_NotFound(t *testing.T) {
+	a := assert.New(t)
+
+	host := "notexists.org"
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "GET", []interface{}{host}).Return(redis.NewResp(nil))
+
+	rs := redisstore.NewRedisStore(cmder)
+	hostRule, err := rs.GetHostRules(host)
+	a.Nil(err)
+	a.Nil(hostRule)
+
+	cmder.AssertExpectations(t)
+}
+
+func TestGetHostRules_IoErr(t *testing.T) {
+	a := assert.New(t)
+
+	host := "notexists.org"
+	cmder := new(mocks.CmderMock)
+	ioErr := fmt.Errorf("Some IO error")
+	cmder.On("Cmd", "GET", []interface{}{host}).Return(redis.NewRespIOErr(ioErr))
+
+	rs := redisstore.NewRedisStore(cmder)
+	_, err := rs.GetHostRules(host)
+	a.EqualError(err, ioErr.Error())
+
+	cmder.AssertExpectations(t)
+}
+
+func TestGetHostRules_JsonError(t *testing.T) {
+	a := assert.New(t)
+
+	host := "notexists.org"
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "GET", []interface{}{host}).Return(redis.NewRespSimple("erro"))
+
+	rs := redisstore.NewRedisStore(cmder)
+	_, err := rs.GetHostRules(host)
+	a.EqualError(err, "invalid character 'e' looking for beginning of value")
+
+	cmder.AssertExpectations(t)
+}

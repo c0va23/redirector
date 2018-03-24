@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
+	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/mediocregopher/radix.v2/util"
 
 	"github.com/c0va23/redirector/models"
@@ -65,5 +66,19 @@ func (rs *RedisStore) ReplaceHostRules(hostRules models.HostRules) error {
 
 // GetHostRules implement Store.GetHostRules
 func (rs *RedisStore) GetHostRules(host string) (*models.HostRules, error) {
-	return nil, nil
+	resp := rs.Cmder.Cmd("GET", host)
+
+	value, err := resp.Bytes()
+	if redis.ErrRespNil == err {
+		return nil, nil
+	} else if nil != err {
+		return nil, err
+	}
+
+	var hostRules models.HostRules
+	if err := json.Unmarshal(value, &hostRules); nil != err {
+		return nil, err
+	}
+
+	return &hostRules, nil
 }
