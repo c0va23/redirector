@@ -1,6 +1,7 @@
 package redisstore_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -145,6 +146,67 @@ func TestListHostRules_DecoreError(t *testing.T) {
 
 	_, err := rs.ListHostRules()
 	a.EqualError(err, "invalid character 'e' looking for beginning of value")
+
+	cmder.AssertExpectations(t)
+}
+
+func TestReplaceHostRules_Success(t *testing.T) {
+	a := assert.New(t)
+
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJson, _ := json.Marshal(hostRule)
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "SET", []interface{}{
+		hostRule.Host,
+		string(hostRuleJson),
+	}).Return(redis.NewRespSimple("OK"))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	err := rs.ReplaceHostRules(hostRule)
+	a.Nil(err)
+
+	cmder.AssertExpectations(t)
+}
+
+func TestReplaceHostRules_IoError(t *testing.T) {
+	a := assert.New(t)
+
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJson, _ := json.Marshal(hostRule)
+
+	cmder := new(mocks.CmderMock)
+	ioErr := fmt.Errorf("Some IO error")
+	cmder.On("Cmd", "SET", []interface{}{
+		hostRule.Host,
+		string(hostRuleJson),
+	}).Return(redis.NewRespIOErr(ioErr))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	err := rs.ReplaceHostRules(hostRule)
+	a.EqualError(err, ioErr.Error())
+
+	cmder.AssertExpectations(t)
+}
+
+func TestReplaceHostRules_SetNotOk(t *testing.T) {
+	a := assert.New(t)
+
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJson, _ := json.Marshal(hostRule)
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "SET", []interface{}{
+		hostRule.Host,
+		string(hostRuleJson),
+	}).Return(redis.NewResp(nil))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	err := rs.ReplaceHostRules(hostRule)
+	a.EqualError(err, "response is nil")
 
 	cmder.AssertExpectations(t)
 }

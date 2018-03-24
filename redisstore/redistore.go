@@ -53,6 +53,13 @@ func (rs *RedisStore) ListHostRules() ([]models.HostRules, error) {
 
 // ReplaceHostRules implement Store.ReplaceHostRules
 func (rs *RedisStore) ReplaceHostRules(hostRules models.HostRules) error {
+	json, _ := json.Marshal(hostRules)
+	resp := rs.Cmder.Cmd("SET", hostRules.Host, string(json))
+
+	if _, err := resp.Str(); nil != err {
+		return err
+	}
+
 	return nil
 }
 
