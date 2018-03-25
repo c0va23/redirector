@@ -21,6 +21,7 @@ type RedisConfig struct {
 	Host     string
 	Port     Port
 	Database Database
+	PoolSize uint
 }
 
 // DefaultPort is Default value for Port
@@ -28,9 +29,6 @@ const DefaultPort = Port(6379)
 
 // DefaultDatabase is Default value for Database
 const DefaultDatabase = Database(0)
-
-// DefaultPoolSize is default pool size
-const DefaultPoolSize = 10
 
 const redisScheme = "redis"
 
@@ -103,7 +101,7 @@ func buildCustomDialer(db Database) pool.DialFunc {
 }
 
 // BuildRedisPool build new redis pool
-func BuildRedisPool(redisURI string) (util.Cmder, error) {
+func BuildRedisPool(redisURI string, poolSize int) (util.Cmder, error) {
 	config, err := ParseRedisURI(redisURI)
 	if nil != err {
 		return nil, err
@@ -113,7 +111,7 @@ func BuildRedisPool(redisURI string) (util.Cmder, error) {
 	return pool.NewCustom(
 		"tcp",
 		addr,
-		DefaultPoolSize,
+		poolSize,
 		buildCustomDialer(config.Database),
 	)
 }

@@ -13,8 +13,9 @@ import (
 )
 
 var appOptions struct {
-	StoreType string `short:"s" long:"store-type" description:"Type of store engine" choice:"memory" choice:"redis" default:"memory"`
-	RedisURI  string `long:"redis-uri" description:"Connection URI for Redis. Required if store-type equal redis"`
+	StoreType     string `short:"s" long:"store-type" description:"Type of store engine" choice:"memory" choice:"redis" default:"memory"`
+	RedisURI      string `long:"redis-uri" description:"Connection URI for Redis. Required if store-type equal redis"`
+	RedisPoolSize int    `long:"redis-pool-size" description:"Redis pool size" default:"10"`
 }
 
 func configureFlags(api *operations.RedirectorAPI) {
@@ -32,7 +33,7 @@ func buildStore() store.Store {
 	case "memory":
 		return memstore.NewMemStore()
 	case "redis":
-		client, err := redisstore.BuildRedisPool(appOptions.RedisURI)
+		client, err := redisstore.BuildRedisPool(appOptions.RedisURI, appOptions.RedisPoolSize)
 		if nil != err {
 			log.Fatalf("Redis error: %s", err)
 		}
