@@ -108,7 +108,6 @@ definitions:
     properties:
       path:
         type: string
-        pattern: '/.*'
         x-nullable: false
       http_code:
         type: number
@@ -147,14 +146,14 @@ definitions:
       {
         host: "example.org",
         default_target: {
-          path: "/target",
+          path: "//example.com/target",
           http_code: 301
         },
         rules: [
           {
-            source_path: '/source',
+            source_path: 'source-path',
             target: {
-              path: "/target",
+              path: "//example.com/target",
               http_code: 301
             },
             active_from: '2018-03-15T12:00:00Z'
@@ -185,9 +184,9 @@ definitions:
     - target
     example:
       {
-        source_path: '/source',
+        source_path: 'source-path',
         target: {
-          path: '/target',
+          path: '//example.com/target',
           http_code: 301
         },
         active_from: '2018-03-16T12:00:00Z'
