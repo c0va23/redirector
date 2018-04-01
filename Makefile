@@ -3,7 +3,7 @@ dev-deps:
 	go get -u github.com/golang/dep/cmd/dep
 
 deps:
-	dep ensure
+	dep ensure -vendor-only
 
 gen-swagger:
 	swagger generate server -f api.yml
