@@ -1,6 +1,7 @@
 package restapi
 
 import (
+	"errors"
 	"log"
 
 	"github.com/go-openapi/swag"
@@ -16,6 +17,8 @@ var appOptions struct {
 	StoreType     string `short:"s" long:"store-type" description:"Type of store engine" choice:"memory" choice:"redis" default:"memory"`
 	RedisURI      string `long:"redis-uri" description:"Connection URI for Redis. Required if store-type equal redis"`
 	RedisPoolSize int    `long:"redis-pool-size" description:"Redis pool size" default:"10"`
+	BasicUsername string `long:"basic-username" short:"u" env:"BASIC_USERNAME" description:"Username for Basic auth" required:"true"`
+	BasicPassword string `long:"basic-password" short:"p" env:"BASIC_PASSWORD" description:"Password for Basic auth." required:"true"`
 }
 
 func configureFlags(api *operations.RedirectorAPI) {
@@ -46,4 +49,14 @@ func buildStore() store.Store {
 
 func buildResolver() resolver.Resolver {
 	return resolver.NewSimpleResolver()
+}
+
+var errInvalidBasicCredentials = errors.New("Invalid Basic credentials")
+
+func basicAuth(userename, password string) (interface{}, error) {
+	if appOptions.BasicUsername != userename || appOptions.BasicPassword != password {
+		return false, errInvalidBasicCredentials
+	}
+
+	return true, nil
 }

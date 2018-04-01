@@ -33,6 +33,8 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	// Example:
 	// api.Logger = log.Printf
 
+	api.APISecurityAuth = basicAuth
+
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()

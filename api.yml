@@ -17,6 +17,8 @@ paths:
       - application/json
       produces:
       - application/json
+      security:
+      - apiSecurity: []
       responses:
         200:
           description: "List host rules"
@@ -35,6 +37,8 @@ paths:
       - application/json
       produces:
       - application/json
+      security:
+      - apiSecurity: []
       parameters:
         - name: host_rules
           in: body
@@ -92,6 +96,10 @@ responses:
     description: Internal server error
     schema:
       $ref: '#/definitions/ServerError'
+
+securityDefinitions:
+  apiSecurity:
+    type: basic
 
 definitions:
   Target:

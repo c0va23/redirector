@@ -24,7 +24,7 @@ func NewController(store store.Store, resolver resolver.Resolver) Controller {
 }
 
 // ListHostRulesHandler is handler for ListHostRules
-func (c *Controller) ListHostRulesHandler(params operations.ListHostRulesParams) middleware.Responder {
+func (c *Controller) ListHostRulesHandler(params operations.ListHostRulesParams, _principal interface{}) middleware.Responder {
 	listHostRules, err := c.store.ListHostRules()
 
 	if nil != err {
@@ -37,7 +37,7 @@ func (c *Controller) ListHostRulesHandler(params operations.ListHostRulesParams)
 }
 
 // ReplaceHostRulesHandler is handler for ReplaceHostRules
-func (c *Controller) ReplaceHostRulesHandler(params operations.ReplaceHostRulesParams) middleware.Responder {
+func (c *Controller) ReplaceHostRulesHandler(params operations.ReplaceHostRulesParams, _principal interface{}) middleware.Responder {
 	err := c.store.ReplaceHostRules(params.HostRules)
 
 	if nil != err {

@@ -30,7 +30,7 @@ func TestListHostRulesHandler_Success(t *testing.T) {
 	s.On("ListHostRules").Return(listHostRules, nil)
 
 	a.Equal(
-		c.ListHostRulesHandler(operations.ListHostRulesParams{}),
+		c.ListHostRulesHandler(operations.ListHostRulesParams{}, true),
 		operations.NewListHostRulesOK().WithPayload(listHostRules),
 	)
 
@@ -49,7 +49,7 @@ func TestListHostRulesHandler_Error(t *testing.T) {
 	s.On("ListHostRules").Return([]models.HostRules{}, err)
 
 	a.Equal(
-		c.ListHostRulesHandler(operations.ListHostRulesParams{}),
+		c.ListHostRulesHandler(operations.ListHostRulesParams{}, true),
 		operations.NewListHostRulesInternalServerError().
 			WithPayload(&models.ServerError{Message: err.Error()}),
 	)
@@ -73,6 +73,7 @@ func TestReplaceHostRulesHandler_Success(t *testing.T) {
 			operations.ReplaceHostRulesParams{
 				HostRules: newHostRules,
 			},
+			true,
 		),
 		operations.NewReplaceHostRulesOK().WithPayload(&newHostRules),
 	)
@@ -96,6 +97,7 @@ func TestReplaceHostRulesHandler_Error(t *testing.T) {
 			operations.ReplaceHostRulesParams{
 				HostRules: newHostRules,
 			},
+			true,
 		),
 		operations.NewReplaceHostRulesInternalServerError().
 			WithPayload(&models.ServerError{Message: err.Error()}),
