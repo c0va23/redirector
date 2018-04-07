@@ -12,6 +12,9 @@ gen-swagger:
 lint:
 	bash -c "test $$(goimports -d $$(git ls-files *.go) | tee /dev/stderr | wc -l) -eq 0"
 
+run-test:
+	go test ./...
+
 clean:
 	git clean -f -d -X  -- **
 	git clean -f -d -X  -- cmd/**
