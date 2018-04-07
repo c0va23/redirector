@@ -33,7 +33,7 @@ var RuleFactory = factory.NewFactory(models.Rule{}).
 	SubFactory("Target", TargetFactory).
 	Attr("SourcePath", pathFactory)
 
-// HostRuleFactory generate HostRule
+// HostRulesFactory generate HostRule
 var HostRulesFactory = factory.NewFactory(models.HostRules{}).
 	Attr(
 		"Host",
