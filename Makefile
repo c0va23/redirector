@@ -10,6 +10,7 @@ gen-swagger:
 	swagger generate server -f api.yml
 
 lint:
+	go vet ./...
 	bash -c "test $$(goimports -d $$(git ls-files *.go) | tee /dev/stderr | wc -l) -eq 0"
 
 run-test:
