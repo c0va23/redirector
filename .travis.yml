@@ -10,3 +10,4 @@ before_install:
 script:
 - make lint
 - make run-test
+- make bin/redirector-server
