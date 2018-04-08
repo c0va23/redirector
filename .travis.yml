@@ -1,0 +1,12 @@
+language: go
+go:
+- '1.10'
+
+before_install:
+- make dev-deps
+- make deps
+- make gen-swagger
+
+script:
+- make lint
+- make run-test
