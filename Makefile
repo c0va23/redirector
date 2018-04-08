@@ -6,6 +6,7 @@ dev-deps:
 	go get -u golang.org/x/tools/cmd/goimports
 	go get -u golang.org/x/lint/golint
 	go get -u github.com/kisielk/errcheck
+	go get -u honnef.co/go/tools/cmd/staticcheck
 
 deps:
 	dep ensure -vendor-only
@@ -18,6 +19,7 @@ lint:
 	bash -c "test $$(goimports -d $$(git ls-files *.go) | tee /dev/stderr | wc -l) -eq 0"
 	bash -c "test $$(go list ./... | xargs golint | tee /dev/stderr | wc -l) -eq 0"
 	bash -c "errcheck \$$(go list ./... | grep -v -E $(ERRCHECK_EXCLUDE_PATTERN))"
+	staticcheck ./...
 
 run-test:
 	go test ./...
