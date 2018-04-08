@@ -37,6 +37,7 @@ func TestReplaceHostRules_AddOne(t *testing.T) {
 	a.Nil(err)
 
 	listHostRules, err := s.ListHostRules()
+	a.Nil(err)
 	a.Equal(listHostRules, []models.HostRules{hostRules})
 }
 
