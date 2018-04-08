@@ -3,3 +3,4 @@ models/
 restapi/*
 !restapi/configure_*
 vendor/
+bin/

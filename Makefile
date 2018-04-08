@@ -1,3 +1,4 @@
+PACKAGE := github.com/c0va23/redirector
 ERRCHECK_EXCLUDE_PATTERN := '(cmd/redirector-server|restapi/operations)'
 
 dev-deps:
@@ -23,6 +24,12 @@ lint:
 
 run-test:
 	go test ./...
+
+bin/:
+	mkdir bin/
+
+bin/redirector-server: bin/
+	go build -o $@ $(PACKAGE)/cmd/redirector-server
 
 clean:
 	git clean -f -d -X  -- **
