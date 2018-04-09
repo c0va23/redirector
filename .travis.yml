@@ -10,4 +10,6 @@ before_install:
 script:
 - make lint
 - make run-test
-- make bin/redirector-server
+- make bin/redirector-server-linux-amd64
+- make bin/redirector-server-linux-arm
+- make bin/redirector-server-linux-arm64

@@ -28,7 +28,19 @@ run-test:
 bin/:
 	mkdir bin/
 
-bin/redirector-server: bin/
+bin/redirector-server-linux-amd64: bin/
+	GOOS=linux \
+	GOARCH=amd64 \
+	go build -o $@ $(PACKAGE)/cmd/redirector-server
+
+bin/redirector-server-linux-arm: bin/
+	GOOS=linux \
+	GOARCH=arm \
+	go build -o $@ $(PACKAGE)/cmd/redirector-server
+
+bin/redirector-server-linux-arm64: bin/
+	GOOS=linux \
+	GOARCH=arm64 \
 	go build -o $@ $(PACKAGE)/cmd/redirector-server
 
 clean:
