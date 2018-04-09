@@ -1,12 +1,47 @@
 # Redirector
 
-`redirector` is dynamic configurable HTTP-redirection service.
-
 [![Build Status](https://travis-ci.org/c0va23/redirector.svg?branch=master)](https://travis-ci.org/c0va23/redirector)
+
+## About `redirector`
+
+`redirector` is dynamic configurable HTTP-redirection service.
 
 Supported store engine:
 - `memory` (not store configuration between restarts)
 - `redis` (now support only single-server configuration)
+
+Supported match / resolve algorithm:
+- `simple` (full match of host and path, not change target)
+- `regex` (**not yet implemented**, full match host, regex path path, change target by pattern)
+
+
+### Use cases
+
+- Short links with full path name control
+- Short links with activation codes (promo codes, confirmation of email addresses, password recovery, etc.)
+
+
+### How it work?
+
+1. Run service on your server(s) ([See usage](#Usage))
+2. Configure service via [API](/api.yml) (Web UI expected in the future)
+3. Direct the DNS records of the domains used by the redirector to the server where the service is started
+4. Test by open any configured link in browser or with `curl`
+
+
+### Algorithm matching rules and resolving targets
+
+1. Find host by full match.
+2. If host not found, then return empty response with HTTP code 404.
+3. Find rule with selected resolve algorithm.
+4. If rule not found, then redirect to default target url and HTTP code.
+5. If rule found, then redirect to rule URL and HTTP code.
+
+
+### Ready for production use?
+
+**Not yet used in production.**
+
 
 ## Test and build
 
@@ -41,6 +76,17 @@ make run-test
 
 ```bash
 make bin/redirector-server
+```
+
+
+## Build docker image and run container
+
+```bash
+# Build image
+docker build -t redirector .
+
+# Run container
+docker run -p 8080:8080 redirector
 ```
 
 
