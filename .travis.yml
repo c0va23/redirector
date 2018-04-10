@@ -1,15 +1,25 @@
 language: go
 go:
 - '1.10'
-
 before_install:
 - make dev-deps
 - make deps
 - make gen-swagger
-
 script:
 - make lint
 - make run-test
 - make bin/redirector-server-linux-amd64
 - make bin/redirector-server-linux-arm
 - make bin/redirector-server-linux-arm64
+deploy:
+  provider: releases
+  skip_cleanup: yes
+  api_key:
+    secure: "TKLzbO8oI1tClameDRqNVp9R4wGTWZJ4IxOGom7tx25QgYYLVV/4DjEFegZb7+CIA6c9i1mkpvai0OMh6x5lAarspLoLryPvBv+/xS+hw8eneGvwQ7II+6w3znhQAPaLcja/cI6F94UdQgVqU6SXZMLN7w/5+adHEavyd9M6CqbrhO+mFPHdGV2BY6MlO4PrdYuM+rlAR8xU3kbUzdDzNTN4k7b8bLcokYbaRXXuzDD2RyvT3deKMDFF6dd8Z8aKvvMHqdJY+8bboCdt9rH7yQXsd0iLnKHcXEpfS4lKOyCvKx1ocDN/EK2MWuaasdrgx12qkirrU8gvaGGiSXzM6zp8PN3nIKqV5G7sSvwOm7MXc0YM+hbgTBTT8gqeUorNtl+9K4sGRtVc880EFUWYCozsRxHsLKPIyTz8XHPcKI+yMLD0rncBrQWacrHHE7AE+PBZjcAUc3VnlvL37J+uYFdjqnGqtkExqBH5lDDGe7uIrLw+ZwQZq5uLezMyA8LJqsGZxR6gKqecRtfBa+mPBBELik28L+XPlHnnnj8hl3lkm2L97uuOFuyujNO7Ya++TtvjZ3ZCpKMr7cBVFOGlOngyM2gj6tFSy5XikU+GaYxZna/YHDys1Mzmm4bfftYREWAYMCutWaQJxTgHwNZSU9xEzjq0gjfIVEi72raI9rQ="
+  file:
+  - bin/redirector-server-linux-amd64
+  - bin/redirector-server-linux-arm
+  - bin/redirector-server-linux-arm64
+  on:
+    repo: c0va23/redirector
+    tags: true
