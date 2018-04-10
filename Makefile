@@ -46,3 +46,15 @@ bin/redirector-server-linux-arm64: bin/
 clean:
 	git clean -f -d -X  -- **
 	git clean -f -d -X  -- cmd/**
+
+bump-minor-version:
+	./scripts/bump_version.go VERSION minor
+
+bump-patch-version:
+	./scripts/bump_version.go VERSION patch
+
+tag-version:
+	git tag $(shell cat VERSION)
+
+tag-push:
+	git push origin $(shell cat VERSION)
