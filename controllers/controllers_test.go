@@ -8,7 +8,8 @@ import (
 
 	"github.com/c0va23/redirector/controllers"
 	"github.com/c0va23/redirector/models"
-	"github.com/c0va23/redirector/restapi/operations"
+	"github.com/c0va23/redirector/restapi/operations/config"
+	"github.com/c0va23/redirector/restapi/operations/redirect"
 
 	"github.com/c0va23/redirector/test/factories"
 	"github.com/c0va23/redirector/test/mocks"
@@ -30,8 +31,8 @@ func TestListHostRulesHandler_Success(t *testing.T) {
 	s.On("ListHostRules").Return(listHostRules, nil)
 
 	a.Equal(
-		c.ListHostRulesHandler(operations.ListHostRulesParams{}, true),
-		operations.NewListHostRulesOK().WithPayload(listHostRules),
+		c.ListHostRulesHandler(config.ListHostRulesParams{}, true),
+		config.NewListHostRulesOK().WithPayload(listHostRules),
 	)
 
 	s.AssertExpectations(t)
@@ -49,8 +50,8 @@ func TestListHostRulesHandler_Error(t *testing.T) {
 	s.On("ListHostRules").Return([]models.HostRules{}, err)
 
 	a.Equal(
-		c.ListHostRulesHandler(operations.ListHostRulesParams{}, true),
-		operations.NewListHostRulesInternalServerError().
+		c.ListHostRulesHandler(config.ListHostRulesParams{}, true),
+		config.NewListHostRulesInternalServerError().
 			WithPayload(&models.ServerError{Message: err.Error()}),
 	)
 
@@ -70,12 +71,12 @@ func TestReplaceHostRulesHandler_Success(t *testing.T) {
 
 	a.Equal(
 		c.ReplaceHostRulesHandler(
-			operations.ReplaceHostRulesParams{
+			config.ReplaceHostRulesParams{
 				HostRules: newHostRules,
 			},
 			true,
 		),
-		operations.NewReplaceHostRulesOK().WithPayload(&newHostRules),
+		config.NewReplaceHostRulesOK().WithPayload(&newHostRules),
 	)
 
 	s.AssertExpectations(t)
@@ -94,12 +95,12 @@ func TestReplaceHostRulesHandler_Error(t *testing.T) {
 
 	a.Equal(
 		c.ReplaceHostRulesHandler(
-			operations.ReplaceHostRulesParams{
+			config.ReplaceHostRulesParams{
 				HostRules: newHostRules,
 			},
 			true,
 		),
-		operations.NewReplaceHostRulesInternalServerError().
+		config.NewReplaceHostRulesInternalServerError().
 			WithPayload(&models.ServerError{Message: err.Error()}),
 	)
 
@@ -118,10 +119,10 @@ func TestRedirectHandler_ServerError(t *testing.T) {
 	s.On("GetHostRules", host).Return(nil, err)
 
 	a.Equal(
-		c.RedirectHandler(operations.RedirectParams{
+		c.RedirectHandler(redirect.RedirectParams{
 			Host: host,
 		}),
-		operations.NewRedirectInternalServerError().
+		redirect.NewRedirectInternalServerError().
 			WithPayload(&models.ServerError{Message: err.Error()}),
 	)
 
@@ -139,10 +140,10 @@ func TestRedirectHandler_NotFound(t *testing.T) {
 	s.On("GetHostRules", host).Return(nil, nil)
 
 	a.Equal(
-		c.RedirectHandler(operations.RedirectParams{
+		c.RedirectHandler(redirect.RedirectParams{
 			Host: host,
 		}),
-		operations.NewRedirectNotFound(),
+		redirect.NewRedirectNotFound(),
 	)
 
 	s.AssertExpectations(t)
@@ -161,11 +162,11 @@ func TestRedirectHandler_Success(t *testing.T) {
 	r.On("Resolve", hostRules, path).Return(hostRules.DefaultTarget)
 
 	a.Equal(
-		c.RedirectHandler(operations.RedirectParams{
+		c.RedirectHandler(redirect.RedirectParams{
 			Host:       hostRules.Host,
 			SourcePath: path,
 		}),
-		operations.NewRedirectDefault(int(hostRules.DefaultTarget.HTTPCode)).
+		redirect.NewRedirectDefault(int(hostRules.DefaultTarget.HTTPCode)).
 			WithLocation(hostRules.DefaultTarget.Path),
 	)
 

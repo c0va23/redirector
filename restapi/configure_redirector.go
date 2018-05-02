@@ -14,6 +14,8 @@ import (
 
 	"github.com/c0va23/redirector/controllers"
 	"github.com/c0va23/redirector/restapi/operations"
+	"github.com/c0va23/redirector/restapi/operations/config"
+	"github.com/c0va23/redirector/restapi/operations/redirect"
 )
 
 //go:generate swagger generate server --target .. --name  --spec ../api.yml
@@ -39,9 +41,9 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.ListHostRulesHandler = operations.ListHostRulesHandlerFunc(controller.ListHostRulesHandler)
-	api.RedirectHandler = operations.RedirectHandlerFunc(controller.RedirectHandler)
-	api.ReplaceHostRulesHandler = operations.ReplaceHostRulesHandlerFunc(controller.ReplaceHostRulesHandler)
+	api.ConfigListHostRulesHandler = config.ListHostRulesHandlerFunc(controller.ListHostRulesHandler)
+	api.ConfigReplaceHostRulesHandler = config.ReplaceHostRulesHandlerFunc(controller.ReplaceHostRulesHandler)
+	api.RedirectRedirectHandler = redirect.RedirectHandlerFunc(controller.RedirectHandler)
 
 	api.ServerShutdown = func() {}
 

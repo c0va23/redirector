@@ -8,11 +8,19 @@ info:
   license:
     name: "MIT"
 
+tags:
+- name: config
+  description: Configuration API
+- name: redirect
+  description: Redirection handler
+
 paths:
   /host_rules:
     get:
       summary: "List host rules"
       operationId: listHostRules
+      tags:
+      - config
       consumes:
       - application/json
       produces:
@@ -33,6 +41,8 @@ paths:
       summary: "Create or replace host rules"
       description: "Update host rule if host rule exists or create host rule"
       operationId: replaceHostRules
+      tags:
+      - config
       consumes:
       - application/json
       produces:
@@ -74,6 +84,8 @@ paths:
       description: |
         If with path match any defined rule, then it redirect to rule target.
         Otherwise return 404 response.
+      tags:
+      - redirect
       operationId: redirect
       responses:
         404:
