@@ -50,7 +50,7 @@ paths:
       security:
       - apiSecurity: []
       parameters:
-        - name: host_rules
+        - name: hostRules
           in: body
           schema:
             $ref: '#/definitions/HostRules'
@@ -67,12 +67,12 @@ paths:
         500:
           $ref: '#/responses/InternalServerError'
 
-  /{source_path}:
+  /{sourcePath}:
     parameters:
     - in: path
-      name: source_path
+      name: sourcePath
       type: string
-      description: "*source_path* for match rule"
+      description: "*sourcePath* for match rule"
       required: true
     - in: header
       name: Host
@@ -89,12 +89,12 @@ paths:
       operationId: redirect
       responses:
         404:
-          description: 'Response when rule for source_path and host not found'
+          description: 'Response when rule for sourcePath and host not found'
         500:
           $ref: '#/responses/InternalServerError'
         default:
           description: |
-            Response when rule for `source_path` and host is found
+            Response when rule for `sourcePath` and host is found
 
             Code of response equal `http_code` from `HostRule.Target`.
             And header `Location` equal `target_path` from `HostRule.target`.
@@ -121,7 +121,7 @@ definitions:
       path:
         type: string
         x-nullable: false
-      http_code:
+      httpCode:
         type: number
         format: int32
         minimum: 300
@@ -129,11 +129,11 @@ definitions:
         x-nullable: false
     required:
     - path
-    - http_code
+    - httpCode
     example:
       {
         path: "/target",
-        http_code: 301
+        httpCode: 301
       }
 
   HostRules:
@@ -144,7 +144,7 @@ definitions:
         type: string
         format: idn-hostname
         x-nullable: false
-      default_target:
+      defaultTarget:
         $ref: '#/definitions/Target'
       rules:
         type: array
@@ -152,23 +152,23 @@ definitions:
           $ref: "#/definitions/Rule"
     required:
     - host
-    - default_target
+    - defaultTarget
     - rules
     example:
       {
         host: "example.org",
-        default_target: {
+        defaultTarget: {
           path: "//example.com/target",
-          http_code: 301
+          httpCode: 301
         },
         rules: [
           {
-            source_path: 'source-path',
+            sourcePath: 'source-path',
             target: {
               path: "//example.com/target",
-              http_code: 301
+              httpCode: 301
             },
-            active_from: '2018-03-15T12:00:00Z'
+            activeFrom: '2018-03-15T12:00:00Z'
           }
         ]
       }
@@ -177,31 +177,31 @@ definitions:
     type: object
     x-nullable: false
     properties:
-      source_path:
+      sourcePath:
         type: string
         description: "Regex for match source path"
         x-nullable: false
       target:
         $ref: '#/definitions/Target'
-      active_from:
+      activeFrom:
         type: string
         format: date-time
         x-nullable: true
-      active_to:
+      activeTo:
         type: string
         format: date-time
         x-nullable: true
     required:
-    - source_path
+    - sourcePath
     - target
     example:
       {
-        source_path: 'source-path',
+        sourcePath: 'source-path',
         target: {
           path: '//example.com/target',
-          http_code: 301
+          httpCode: 301
         },
-        active_from: '2018-03-16T12:00:00Z'
+        activeFrom: '2018-03-16T12:00:00Z'
       }
 
   ServerError:
