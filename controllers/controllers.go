@@ -5,7 +5,8 @@ import (
 
 	"github.com/c0va23/redirector/models"
 	"github.com/c0va23/redirector/resolver"
-	"github.com/c0va23/redirector/restapi/operations"
+	"github.com/c0va23/redirector/restapi/operations/config"
+	"github.com/c0va23/redirector/restapi/operations/redirect"
 	"github.com/c0va23/redirector/store"
 )
 
@@ -24,47 +25,47 @@ func NewController(store store.Store, resolver resolver.Resolver) Controller {
 }
 
 // ListHostRulesHandler is handler for ListHostRules
-func (c *Controller) ListHostRulesHandler(params operations.ListHostRulesParams, _principal interface{}) middleware.Responder {
+func (c *Controller) ListHostRulesHandler(params config.ListHostRulesParams, _principal interface{}) middleware.Responder {
 	listHostRules, err := c.store.ListHostRules()
 
 	if nil != err {
 		serverError := models.ServerError{Message: err.Error()}
-		return operations.NewListHostRulesInternalServerError().WithPayload(&serverError)
+		return config.NewListHostRulesInternalServerError().WithPayload(&serverError)
 	}
 
-	return operations.NewListHostRulesOK().
+	return config.NewListHostRulesOK().
 		WithPayload(listHostRules)
 }
 
 // ReplaceHostRulesHandler is handler for ReplaceHostRules
-func (c *Controller) ReplaceHostRulesHandler(params operations.ReplaceHostRulesParams, _principal interface{}) middleware.Responder {
+func (c *Controller) ReplaceHostRulesHandler(params config.ReplaceHostRulesParams, _principal interface{}) middleware.Responder {
 	err := c.store.ReplaceHostRules(params.HostRules)
 
 	if nil != err {
 		serverError := models.ServerError{Message: err.Error()}
-		return operations.NewReplaceHostRulesInternalServerError().WithPayload(&serverError)
+		return config.NewReplaceHostRulesInternalServerError().WithPayload(&serverError)
 	}
 
-	return operations.NewReplaceHostRulesOK().
+	return config.NewReplaceHostRulesOK().
 		WithPayload(&params.HostRules)
 }
 
 // RedirectHandler is handler for Redirect
-func (c *Controller) RedirectHandler(params operations.RedirectParams) middleware.Responder {
+func (c *Controller) RedirectHandler(params redirect.RedirectParams) middleware.Responder {
 	hostRules, err := c.store.GetHostRules(params.Host)
 
 	if nil != err {
 		serverError := models.ServerError{Message: err.Error()}
-		return operations.NewRedirectInternalServerError().
+		return redirect.NewRedirectInternalServerError().
 			WithPayload(&serverError)
 	}
 
 	if nil == hostRules {
-		return operations.NewRedirectNotFound()
+		return redirect.NewRedirectNotFound()
 	}
 
 	target := c.resolver.Resolve(*hostRules, params.SourcePath)
 
-	return operations.NewRedirectDefault(int(target.HTTPCode)).
+	return redirect.NewRedirectDefault(int(target.HTTPCode)).
 		WithLocation(target.Path)
 }
