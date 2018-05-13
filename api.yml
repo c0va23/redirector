@@ -67,6 +67,37 @@ paths:
         500:
           $ref: '#/responses/InternalServerError'
 
+  /host_rules/{host}:
+    parameters:
+    - in: path
+      name: host
+      type: string
+      required: true
+      description: Target Host
+
+    get:
+      operationId: getHostRule
+      summary: Get HostRule
+      tags:
+      - config
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      security:
+      - apiSecurity: []
+      responses:
+        422:
+          description: Invalid validation
+        404:
+          description: HostRule not found by host
+        200:
+          description: HostRules with host
+          schema:
+            $ref: "#/definitions/HostRules"
+        500:
+          $ref: '#/responses/InternalServerError'
+
   /{sourcePath}:
     parameters:
     - in: path
