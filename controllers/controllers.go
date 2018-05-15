@@ -50,6 +50,26 @@ func (c *Controller) ReplaceHostRulesHandler(params config.ReplaceHostRulesParam
 		WithPayload(&params.HostRules)
 }
 
+// GetHostRulesHandler is handler for GetHostRules
+func (c *Controller) GetHostRulesHandler(
+	params config.GetHostRuleParams,
+	_principal interface{},
+) middleware.Responder {
+	hostRules, err := c.store.GetHostRules(params.Host)
+
+	if nil != err {
+		return config.NewGetHostRuleInternalServerError().
+			WithPayload(&models.ServerError{Message: err.Error()})
+	}
+
+	if nil == hostRules {
+		return config.NewGetHostRuleNotFound()
+	}
+
+	return config.NewGetHostRuleOK().
+		WithPayload(hostRules)
+}
+
 // RedirectHandler is handler for Redirect
 func (c *Controller) RedirectHandler(params redirect.RedirectParams) middleware.Responder {
 	hostRules, err := c.store.GetHostRules(params.Host)

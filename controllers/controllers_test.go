@@ -107,6 +107,85 @@ func TestReplaceHostRulesHandler_Error(t *testing.T) {
 	s.AssertExpectations(t)
 }
 
+func TestGetHostRules_Error(t *testing.T) {
+	a := assert.New(t)
+
+	host := fake.DomainName()
+	err := fmt.Errorf("GetHostRulesErr")
+
+	s := new(mocks.StoreMock)
+	s.On("GetHostRules", host).Return(nil, err)
+
+	r := new(mocks.ResolverMock)
+
+	c := controllers.NewController(s, r)
+
+	a.Equal(
+		c.GetHostRulesHandler(
+			config.GetHostRuleParams{
+				Host: host,
+			},
+			true,
+		),
+		config.NewGetHostRuleInternalServerError().
+			WithPayload(&models.ServerError{Message: err.Error()}),
+	)
+
+	s.AssertExpectations(t)
+}
+
+func TestGetHostRules_NotFound(t *testing.T) {
+	a := assert.New(t)
+
+	host := fake.DomainName()
+	s := new(mocks.StoreMock)
+	s.On("GetHostRules", host).Return(nil, nil)
+
+	r := new(mocks.ResolverMock)
+
+	c := controllers.NewController(s, r)
+
+	a.Equal(
+		c.GetHostRulesHandler(
+			config.GetHostRuleParams{
+				Host: host,
+			},
+			true,
+		),
+		config.NewGetHostRuleNotFound(),
+	)
+
+	s.AssertExpectations(t)
+}
+
+func TestGetHostRules_Found(t *testing.T) {
+	a := assert.New(t)
+
+	hostRules := factories.
+		HostRulesFactory.
+		MustCreate().(models.HostRules)
+
+	s := new(mocks.StoreMock)
+	s.On("GetHostRules", hostRules.Host).Return(&hostRules, nil)
+
+	r := new(mocks.ResolverMock)
+
+	c := controllers.NewController(s, r)
+
+	a.Equal(
+		c.GetHostRulesHandler(
+			config.GetHostRuleParams{
+				Host: hostRules.Host,
+			},
+			true,
+		),
+		config.NewGetHostRuleOK().
+			WithPayload(&hostRules),
+	)
+
+	s.AssertExpectations(t)
+}
+
 func TestRedirectHandler_ServerError(t *testing.T) {
 	a := assert.New(t)
 
