@@ -87,10 +87,7 @@ paths:
       security:
       - apiSecurity: []
       responses:
-        422:
-          description: Invalid validation
-        404:
-          description: HostRule not found by host
+        404: { $ref: '#/responses/NotFound' }
         200:
           description: HostRules with host
           schema:
@@ -139,6 +136,8 @@ responses:
     description: Internal server error
     schema:
       $ref: '#/definitions/ServerError'
+  NotFound:
+    description: Not found
 
 securityDefinitions:
   apiSecurity:
