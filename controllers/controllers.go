@@ -95,18 +95,16 @@ func (c *Controller) GetHostRulesHandler(
 ) middleware.Responder {
 	hostRules, err := c.store.GetHostRules(params.Host)
 
-	if nil != err {
-		switch err {
-		case store.ErrNotFound:
-			return config.NewGetHostRuleNotFound()
-		default:
-			return config.NewGetHostRuleInternalServerError().
-				WithPayload(&models.ServerError{Message: err.Error()})
-		}
+	switch err {
+	case nil:
+		return config.NewGetHostRuleOK().
+			WithPayload(hostRules)
+	case store.ErrNotFound:
+		return config.NewGetHostRuleNotFound()
+	default:
+		return config.NewGetHostRuleInternalServerError().
+			WithPayload(&models.ServerError{Message: err.Error()})
 	}
-
-	return config.NewGetHostRuleOK().
-		WithPayload(hostRules)
 }
 
 // RedirectHandler is handler for Redirect
