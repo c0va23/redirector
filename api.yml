@@ -124,6 +124,25 @@ paths:
         500:
           $ref: '#/responses/InternalServerError'
 
+    delete:
+      summary: Delete host rules
+      description: Delete host rule if it exists
+      operationId: deleteHostRules
+      tags:
+      - config
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      security:
+      - apiSecurity: []
+      responses:
+        204:
+          description: HostRules deleted
+        404: { $ref: '#/responses/NotFound' }
+        500:
+          $ref: '#/responses/InternalServerError'
+
   /{sourcePath}:
     parameters:
     - in: path
