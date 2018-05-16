@@ -159,7 +159,33 @@ func TestUpdateHostRules_Success(t *testing.T) {
 	s.AssertExpectations(t)
 }
 
-func TestUpdateHostRules_Error(t *testing.T) {
+func TestUpdateHostRules_NotFoundError(t *testing.T) {
+	a := assert.New(t)
+
+	s := new(mocks.StoreMock)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
+
+	host := fake.DomainName()
+	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
+
+	s.On("UpdateHostRules", host, hostRules).Return(store.ErrNotFound)
+
+	a.Equal(
+		config.NewUpdateHostRulesNotFound(),
+		c.UpdateHostRulesHandler(
+			config.UpdateHostRulesParams{
+				Host:      host,
+				HostRules: hostRules,
+			},
+			true,
+		),
+	)
+
+	s.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_OtherError(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)

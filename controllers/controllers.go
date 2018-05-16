@@ -71,11 +71,16 @@ func (c *Controller) UpdateHostRulesHandler(
 	err := c.store.UpdateHostRules(params.Host, params.HostRules)
 
 	if nil != err {
-		return config.
-			NewUpdateHostRulesInternalServerError().
-			WithPayload(&models.ServerError{
-				Message: err.Error(),
-			})
+		switch err {
+		case store.ErrNotFound:
+			return config.NewUpdateHostRulesNotFound()
+		default:
+			return config.
+				NewUpdateHostRulesInternalServerError().
+				WithPayload(&models.ServerError{
+					Message: err.Error(),
+				})
+		}
 	}
 
 	return config.
