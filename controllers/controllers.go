@@ -70,22 +70,20 @@ func (c *Controller) UpdateHostRulesHandler(
 ) middleware.Responder {
 	err := c.store.UpdateHostRules(params.Host, params.HostRules)
 
-	if nil != err {
-		switch err {
-		case store.ErrNotFound:
-			return config.NewUpdateHostRulesNotFound()
-		default:
-			return config.
-				NewUpdateHostRulesInternalServerError().
-				WithPayload(&models.ServerError{
-					Message: err.Error(),
-				})
-		}
+	switch err {
+	case nil:
+		return config.
+			NewUpdateHostRulesOK().
+			WithPayload(&params.HostRules)
+	case store.ErrNotFound:
+		return config.NewUpdateHostRulesNotFound()
+	default:
+		return config.
+			NewUpdateHostRulesInternalServerError().
+			WithPayload(&models.ServerError{
+				Message: err.Error(),
+			})
 	}
-
-	return config.
-		NewUpdateHostRulesOK().
-		WithPayload(&params.HostRules)
 }
 
 // GetHostRulesHandler is handler for GetHostRules
