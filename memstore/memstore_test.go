@@ -28,27 +28,31 @@ func TestListHostRules_Empty(t *testing.T) {
 	a.Equal(listHostRules, []models.HostRules{})
 }
 
-func TestReplaceHostRules_AddOne(t *testing.T) {
+func TestCreateHostRules_AddOne(t *testing.T) {
 	a := assert.New(t)
 	s := memstore.NewMemStore()
 
-	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
-	err := s.ReplaceHostRules(hostRules)
+	hostRules := factories.
+		HostRulesFactory.
+		MustCreate().(models.HostRules)
+	err := s.CreateHostRules(hostRules)
 	a.Nil(err)
 
-	listHostRules, err := s.ListHostRules()
+	cratedHostRules, err := s.GetHostRules(hostRules.Host)
 	a.Nil(err)
-	a.Equal(listHostRules, []models.HostRules{hostRules})
+	a.Equal(cratedHostRules, &hostRules)
 }
 
-func TestReplaceHostRules_AddMany(t *testing.T) {
+func TestCreateHostRules_AddMany(t *testing.T) {
 	a := assert.New(t)
 	s := memstore.NewMemStore()
 
 	listHostRules := make([]models.HostRules, 0, 3)
 	for i := 0; i < cap(listHostRules); i++ {
-		hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
-		a.Nil(s.ReplaceHostRules(hostRules))
+		hostRules := factories.
+			HostRulesFactory.
+			MustCreate().(models.HostRules)
+		a.Nil(s.CreateHostRules(hostRules))
 	}
 
 	listHostRules, err := s.ListHostRules()
@@ -56,29 +60,62 @@ func TestReplaceHostRules_AddMany(t *testing.T) {
 	a.Equal(listHostRules, listHostRules)
 }
 
-func TestReplaceHostRules_Replace(t *testing.T) {
+func TestCreateHostRules_Exists(t *testing.T) {
 	a := assert.New(t)
 	s := memstore.NewMemStore()
 
-	listHostRules := make([]models.HostRules, 0, 3)
-	for i := 0; i < cap(listHostRules); i++ {
-		hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
-		listHostRules = append(listHostRules, hostRules)
-		a.Nil(s.ReplaceHostRules(hostRules))
-	}
+	hostRules := factories.
+		HostRulesFactory.
+		MustCreate().(models.HostRules)
+	a.Nil(s.CreateHostRules(hostRules))
 
-	updatedHostRules := factories.HostRulesFactory.
+	a.Equal(
+		store.Exists,
+		s.CreateHostRules(hostRules),
+	)
+}
+
+func TestUpdateHostRules_NotFound(t *testing.T) {
+	a := assert.New(t)
+	s := memstore.NewMemStore()
+
+	hostRules := factories.
+		HostRulesFactory.
+		MustCreate().(models.HostRules)
+
+	a.Equal(
+		store.NotFound,
+		s.UpdateHostRules(hostRules.Host, hostRules),
+	)
+}
+
+func TestUpdateHostRules_Success(t *testing.T) {
+	a := assert.New(t)
+	s := memstore.NewMemStore()
+
+	existsHostRules := factories.
+		HostRulesFactory.
+		MustCreate().(models.HostRules)
+
+	a.Nil(s.CreateHostRules(existsHostRules))
+
+	newHostRules := factories.
+		HostRulesFactory.
 		MustCreateWithOption(map[string]interface{}{
-			"Host": listHostRules[1].Host,
+			"Host": existsHostRules.Host,
 		}).(models.HostRules)
 
-	a.Nil(s.ReplaceHostRules(updatedHostRules))
+	// Not return error
+	a.Nil(s.UpdateHostRules(existsHostRules.Host, newHostRules))
 
-	updatedListHostRules, err := s.ListHostRules()
+	updatedHostRules, err := s.GetHostRules(existsHostRules.Host)
 	a.Nil(err)
-	a.Equal(updatedListHostRules[0], listHostRules[0])
-	a.Equal(updatedListHostRules[1], updatedHostRules)
-	a.Equal(updatedListHostRules[2], listHostRules[2])
+
+	// Update host rules
+	a.Equal(
+		&newHostRules,
+		updatedHostRules,
+	)
 }
 
 func TestGetHostRule_Success(t *testing.T) {
@@ -86,7 +123,7 @@ func TestGetHostRule_Success(t *testing.T) {
 	s := memstore.NewMemStore()
 
 	sourceHostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
-	a.Nil(s.ReplaceHostRules(sourceHostRules))
+	a.Nil(s.CreateHostRules(sourceHostRules))
 
 	hostRule, err := s.GetHostRules(sourceHostRules.Host)
 	a.Nil(err)

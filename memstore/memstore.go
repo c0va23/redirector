@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/c0va23/redirector/models"
+	"github.com/c0va23/redirector/store"
 )
 
 // MemStore is in-memory implementation of store.Store
@@ -27,23 +28,35 @@ func (memStore *MemStore) ListHostRules() ([]models.HostRules, error) {
 	return memStore.listHostRules, nil
 }
 
-// ReplaceHostRules replace or create host rule into MemStore
-func (memStore *MemStore) ReplaceHostRules(newHostRules models.HostRules) error {
+// CreateHostRules create new HostRules if it not exists
+func (memStore *MemStore) CreateHostRules(newHostRules models.HostRules) error {
 	memStore.Lock()
 	defer memStore.Unlock()
 
-	updated := false
-	for index, hostRules := range memStore.listHostRules {
+	for _, hostRules := range memStore.listHostRules {
 		if newHostRules.Host == hostRules.Host {
-			memStore.listHostRules[index] = newHostRules
-			updated = true
+			return store.Exists
 		}
 	}
 
-	if !updated {
-		memStore.listHostRules = append(memStore.listHostRules, newHostRules)
-	}
+	memStore.listHostRules = append(memStore.listHostRules, newHostRules)
+
 	return nil
+}
+
+// UpdateHostRules is update host rules if exists
+func (memStore *MemStore) UpdateHostRules(host string, updatedHostRules models.HostRules) error {
+	memStore.Lock()
+	defer memStore.Unlock()
+
+	for index, hostRules := range memStore.listHostRules {
+		if updatedHostRules.Host == hostRules.Host {
+			memStore.listHostRules[index] = updatedHostRules
+			return nil
+		}
+	}
+
+	return store.NotFound
 }
 
 // GetHostRules return HostRule by host
