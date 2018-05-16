@@ -159,3 +159,14 @@ func TestDeleteHostRules_Success(t *testing.T) {
 		err,
 	)
 }
+
+func TestDeleteHostRules_NotFoundError(t *testing.T) {
+	a := assert.New(t)
+	s := memstore.NewMemStore()
+
+	host := fake.DomainName()
+	a.Equal(
+		store.ErrNotFound,
+		s.DeleteHostRules(host),
+	)
+}
