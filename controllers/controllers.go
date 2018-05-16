@@ -96,12 +96,13 @@ func (c *Controller) GetHostRulesHandler(
 	hostRules, err := c.store.GetHostRules(params.Host)
 
 	if nil != err {
-		return config.NewGetHostRuleInternalServerError().
-			WithPayload(&models.ServerError{Message: err.Error()})
-	}
-
-	if nil == hostRules {
-		return config.NewGetHostRuleNotFound()
+		switch err {
+		case store.ErrNotFound:
+			return config.NewGetHostRuleNotFound()
+		default:
+			return config.NewGetHostRuleInternalServerError().
+				WithPayload(&models.ServerError{Message: err.Error()})
+		}
 	}
 
 	return config.NewGetHostRuleOK().

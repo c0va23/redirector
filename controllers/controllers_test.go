@@ -247,7 +247,7 @@ func TestGetHostRules_NotFound(t *testing.T) {
 
 	host := fake.DomainName()
 	s := new(mocks.StoreMock)
-	s.On("GetHostRules", host).Return(nil, nil)
+	s.On("GetHostRules", host).Return(nil, store.ErrNotFound)
 
 	r := new(mocks.ResolverMock)
 

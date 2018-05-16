@@ -78,7 +78,7 @@ func (rs *RedisStore) GetHostRules(host string) (*models.HostRules, error) {
 
 	value, err := resp.Bytes()
 	if redis.ErrRespNil == err {
-		return nil, nil
+		return nil, store.ErrNotFound
 	} else if nil != err {
 		return nil, err
 	}

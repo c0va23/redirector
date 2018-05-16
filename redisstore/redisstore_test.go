@@ -179,8 +179,8 @@ func TestGetHostRules_NotFound(t *testing.T) {
 
 	rs := redisstore.NewRedisStore(cmder)
 	hostRule, err := rs.GetHostRules(host)
-	a.Nil(err)
 	a.Nil(hostRule)
+	a.Equal(store.ErrNotFound, err)
 
 	cmder.AssertExpectations(t)
 }
