@@ -19,7 +19,7 @@ lint:
 	go vet ./...
 	bash -c "test $$(goimports -d $$(git ls-files *.go) | tee /dev/stderr | wc -l) -eq 0"
 	golint -set_exit_status $$(go list ./...)
-	bash -c "errcheck \$$(go list ./... | grep -v -E $(ERRCHECK_EXCLUDE_PATTERN))"
+	errcheck $$(go list ./... | grep -v -E $(ERRCHECK_EXCLUDE_PATTERN))
 	staticcheck ./...
 
 run-test:
