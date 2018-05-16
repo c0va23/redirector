@@ -324,7 +324,7 @@ func TestRedirectHandler_NotFound(t *testing.T) {
 	c := controllers.NewController(s, r)
 
 	host := fake.DomainName()
-	s.On("GetHostRules", host).Return(nil, nil)
+	s.On("GetHostRules", host).Return(nil, store.ErrNotFound)
 
 	a.Equal(
 		c.RedirectHandler(redirect.RedirectParams{
