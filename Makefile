@@ -18,12 +18,12 @@ gen-swagger:
 lint:
 	go vet ./...
 	bash -c "test $$(goimports -d $$(git ls-files *.go) | tee /dev/stderr | wc -l) -eq 0"
-	bash -c "test $$(go list ./... | xargs golint | tee /dev/stderr | wc -l) -eq 0"
-	bash -c "errcheck \$$(go list ./... | grep -v -E $(ERRCHECK_EXCLUDE_PATTERN))"
+	golint -set_exit_status $$(go list ./...)
+	errcheck $$(go list ./... | grep -v -E $(ERRCHECK_EXCLUDE_PATTERN))
 	staticcheck ./...
 
 run-test:
-	go test ./...
+	go test -cover ./...
 
 bin/:
 	mkdir bin/
