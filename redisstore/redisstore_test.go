@@ -253,8 +253,8 @@ func TestCreateHostRules_Exists(t *testing.T) {
 	rs := redisstore.NewRedisStore(cmder)
 
 	a.Equal(
+		store.ErrExists,
 		rs.CreateHostRules(hostRule),
-		store.Exists,
 	)
 
 	cmder.AssertExpectations(t)
@@ -314,7 +314,7 @@ func TestUpdateHostRules_NotFound(t *testing.T) {
 	rs := redisstore.NewRedisStore(cmder)
 
 	a.Equal(
-		store.NotFound,
+		store.ErrNotFound,
 		rs.UpdateHostRules(hostRule.Host, hostRule),
 	)
 	cmder.AssertExpectations(t)
@@ -414,7 +414,7 @@ func TestUpdateHostRules_TargetHostExists(t *testing.T) {
 	rs := redisstore.NewRedisStore(cmder)
 
 	a.Equal(
-		store.Exists,
+		store.ErrExists,
 		rs.UpdateHostRules(sourceHost, hostRule),
 	)
 

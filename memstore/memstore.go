@@ -35,7 +35,7 @@ func (memStore *MemStore) CreateHostRules(newHostRules models.HostRules) error {
 
 	for _, hostRules := range memStore.listHostRules {
 		if newHostRules.Host == hostRules.Host {
-			return store.Exists
+			return store.ErrExists
 		}
 	}
 
@@ -56,7 +56,7 @@ func (memStore *MemStore) UpdateHostRules(host string, updatedHostRules models.H
 		}
 	}
 
-	return store.NotFound
+	return store.ErrNotFound
 }
 
 // GetHostRules return HostRule by host

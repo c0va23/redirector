@@ -70,7 +70,7 @@ func TestCreateHostRules_Exists(t *testing.T) {
 	a.Nil(s.CreateHostRules(hostRules))
 
 	a.Equal(
-		store.Exists,
+		store.ErrExists,
 		s.CreateHostRules(hostRules),
 	)
 }
@@ -84,7 +84,7 @@ func TestUpdateHostRules_NotFound(t *testing.T) {
 		MustCreate().(models.HostRules)
 
 	a.Equal(
-		store.NotFound,
+		store.ErrNotFound,
 		s.UpdateHostRules(hostRules.Host, hostRules),
 	)
 }

@@ -6,8 +6,11 @@ import (
 	"github.com/c0va23/redirector/models"
 )
 
-var NotFound = errors.New("Host rules not found")
-var Exists = errors.New("Host rules already exists")
+// ErrNotFound is error for HostRules not found
+var ErrNotFound = errors.New("Host rules not found")
+
+// ErrExists is error when HostRules already exists
+var ErrExists = errors.New("Host rules already exists")
 
 // Store is interface for stores
 type Store interface {

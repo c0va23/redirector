@@ -99,7 +99,7 @@ func (rs *RedisStore) CreateHostRules(hostRules models.HostRules) error {
 	if code, err := resp.Int(); nil != err {
 		return err
 	} else if 0 == code {
-		return store.Exists
+		return store.ErrExists
 	}
 
 	return nil
@@ -110,14 +110,14 @@ func (rs *RedisStore) UpdateHostRules(host string, hostRules models.HostRules) e
 	if code, err := rs.Cmd("EXISTS", host).Int(); nil != err {
 		return err
 	} else if 0 == code {
-		return store.NotFound
+		return store.ErrNotFound
 	}
 
 	if host != hostRules.Host {
 		if code, err := rs.Cmd("EXISTS", hostRules.Host).Int(); nil != err {
 			return err
 		} else if 1 == code {
-			return store.Exists
+			return store.ErrExists
 		}
 	}
 
