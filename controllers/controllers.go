@@ -105,6 +105,27 @@ func (c *Controller) GetHostRulesHandler(
 	}
 }
 
+// DeleteHostRulesHandler is handler for DeleteHostRules
+func (c *Controller) DeleteHostRulesHandler(
+	params config.DeleteHostRulesParams,
+	_principal interface{},
+) middleware.Responder {
+	err := c.store.DeleteHostRules(params.Host)
+	switch err {
+	case nil:
+		return config.NewDeleteHostRulesNoContent()
+	case store.ErrNotFound:
+		return config.NewDeleteHostRulesNotFound()
+	default:
+		return config.
+			NewDeleteHostRulesInternalServerError().
+			WithPayload(&models.ServerError{
+				Message: err.Error(),
+			})
+
+	}
+}
+
 // RedirectHandler is handler for Redirect
 func (c *Controller) RedirectHandler(params redirect.RedirectParams) middleware.Responder {
 	hostRules, err := c.store.GetHostRules(params.Host)

@@ -294,6 +294,85 @@ func TestGetHostRules_Found(t *testing.T) {
 	s.AssertExpectations(t)
 }
 
+func TestDeleteHostRules_Success(t *testing.T) {
+	a := assert.New(t)
+
+	host := fake.DomainName()
+
+	s := new(mocks.StoreMock)
+	s.On("DeleteHostRules", host).Return(nil)
+
+	r := new(mocks.ResolverMock)
+
+	c := controllers.NewController(s, r)
+
+	a.Equal(
+		c.DeleteHostRulesHandler(
+			config.DeleteHostRulesParams{
+				Host: host,
+			},
+			true,
+		),
+		config.NewDeleteHostRulesNoContent(),
+	)
+
+	s.AssertExpectations(t)
+}
+
+func TestDeleteHostRules_NotFoundError(t *testing.T) {
+	a := assert.New(t)
+
+	host := fake.DomainName()
+
+	s := new(mocks.StoreMock)
+	s.On("DeleteHostRules", host).Return(store.ErrNotFound)
+
+	r := new(mocks.ResolverMock)
+
+	c := controllers.NewController(s, r)
+
+	a.Equal(
+		c.DeleteHostRulesHandler(
+			config.DeleteHostRulesParams{
+				Host: host,
+			},
+			true,
+		),
+		config.NewDeleteHostRulesNotFound(),
+	)
+
+	s.AssertExpectations(t)
+}
+
+func TestDeleteHostRules_OtherError(t *testing.T) {
+	a := assert.New(t)
+
+	host := fake.DomainName()
+
+	otherErr := fmt.Errorf("DeleteErr")
+	s := new(mocks.StoreMock)
+	s.On("DeleteHostRules", host).Return(otherErr)
+
+	r := new(mocks.ResolverMock)
+
+	c := controllers.NewController(s, r)
+
+	a.Equal(
+		c.DeleteHostRulesHandler(
+			config.DeleteHostRulesParams{
+				Host: host,
+			},
+			true,
+		),
+		config.NewDeleteHostRulesInternalServerError().
+			WithPayload(&models.ServerError{
+				Message: otherErr.Error(),
+			}),
+	)
+
+	s.AssertExpectations(t)
+}
+
 func TestRedirectHandler_ServerError(t *testing.T) {
 	a := assert.New(t)
 
