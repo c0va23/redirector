@@ -28,13 +28,15 @@ func NewController(store store.Store, resolver resolver.Resolver) Controller {
 func (c *Controller) ListHostRulesHandler(params config.ListHostRulesParams, _principal interface{}) middleware.Responder {
 	listHostRules, err := c.store.ListHostRules()
 
-	if nil != err {
-		serverError := models.ServerError{Message: err.Error()}
-		return config.NewListHostRulesInternalServerError().WithPayload(&serverError)
+	switch err {
+	case nil:
+		return config.NewListHostRulesOK().
+			WithPayload(listHostRules)
+	default:
+		return config.
+			NewListHostRulesInternalServerError().
+			WithPayload(&models.ServerError{Message: err.Error()})
 	}
-
-	return config.NewListHostRulesOK().
-		WithPayload(listHostRules)
 }
 
 // CreateHostRulesHandler is handler for CreateHostRules
