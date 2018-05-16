@@ -42,7 +42,8 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.ConfigListHostRulesHandler = config.ListHostRulesHandlerFunc(controller.ListHostRulesHandler)
-	api.ConfigReplaceHostRulesHandler = config.ReplaceHostRulesHandlerFunc(controller.ReplaceHostRulesHandler)
+	api.ConfigCreateHostRulesHandler = config.CreateHostRulesHandlerFunc(controller.CreateHostRulesHandler)
+	api.ConfigUpdateHostRulesHandler = config.UpdateHostRulesHandlerFunc(controller.UpdateHostRulesHandler)
 	api.ConfigGetHostRuleHandler = config.GetHostRuleHandlerFunc(controller.GetHostRulesHandler)
 	api.RedirectRedirectHandler = redirect.RedirectHandlerFunc(controller.RedirectHandler)
 

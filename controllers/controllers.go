@@ -37,16 +37,43 @@ func (c *Controller) ListHostRulesHandler(params config.ListHostRulesParams, _pr
 		WithPayload(listHostRules)
 }
 
-// ReplaceHostRulesHandler is handler for ReplaceHostRules
-func (c *Controller) ReplaceHostRulesHandler(params config.ReplaceHostRulesParams, _principal interface{}) middleware.Responder {
-	err := c.store.ReplaceHostRules(params.HostRules)
+// CreateHostRulesHandler is handler for CreateHostRules
+func (c *Controller) CreateHostRulesHandler(
+	params config.CreateHostRulesParams,
+	_principal interface{},
+) middleware.Responder {
+	err := c.store.CreateHostRules(params.HostRules)
 
 	if nil != err {
-		serverError := models.ServerError{Message: err.Error()}
-		return config.NewReplaceHostRulesInternalServerError().WithPayload(&serverError)
+		return config.
+			NewCreateHostRulesInternalServerError().
+			WithPayload(&models.ServerError{
+				Message: err.Error(),
+			})
 	}
 
-	return config.NewReplaceHostRulesOK().
+	return config.
+		NewCreateHostRulesOK().
+		WithPayload(&params.HostRules)
+}
+
+// UpdateHostRulesHandler is handler for UpdateHostRules
+func (c *Controller) UpdateHostRulesHandler(
+	params config.UpdateHostRulesParams,
+	_principal interface{},
+) middleware.Responder {
+	err := c.store.UpdateHostRules(params.Host, params.HostRules)
+
+	if nil != err {
+		return config.
+			NewUpdateHostRulesInternalServerError().
+			WithPayload(&models.ServerError{
+				Message: err.Error(),
+			})
+	}
+
+	return config.
+		NewUpdateHostRulesOK().
 		WithPayload(&params.HostRules)
 }
 

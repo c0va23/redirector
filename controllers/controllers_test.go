@@ -58,7 +58,7 @@ func TestListHostRulesHandler_Error(t *testing.T) {
 	s.AssertExpectations(t)
 }
 
-func TestReplaceHostRulesHandler_Success(t *testing.T) {
+func TestCreateHostRulesHandler_Success(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
@@ -67,22 +67,23 @@ func TestReplaceHostRulesHandler_Success(t *testing.T) {
 
 	newHostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
 
-	s.On("ReplaceHostRules", newHostRules).Return(nil)
+	s.On("CreateHostRules", newHostRules).Return(nil)
 
 	a.Equal(
-		c.ReplaceHostRulesHandler(
-			config.ReplaceHostRulesParams{
+		config.NewCreateHostRulesOK().
+			WithPayload(&newHostRules),
+		c.CreateHostRulesHandler(
+			config.CreateHostRulesParams{
 				HostRules: newHostRules,
 			},
 			true,
 		),
-		config.NewReplaceHostRulesOK().WithPayload(&newHostRules),
 	)
 
 	s.AssertExpectations(t)
 }
 
-func TestReplaceHostRulesHandler_Error(t *testing.T) {
+func TestCreateHostRulesHandler_Error(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
@@ -90,18 +91,75 @@ func TestReplaceHostRulesHandler_Error(t *testing.T) {
 	c := controllers.NewController(s, r)
 
 	newHostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
-	err := fmt.Errorf("ReplaceHostRulesError")
-	s.On("ReplaceHostRules", newHostRules).Return(err)
+	err := fmt.Errorf("CreateHostRulesError")
+	s.On("CreateHostRules", newHostRules).Return(err)
 
 	a.Equal(
-		c.ReplaceHostRulesHandler(
-			config.ReplaceHostRulesParams{
+		config.NewCreateHostRulesInternalServerError().
+			WithPayload(&models.ServerError{Message: err.Error()}),
+		c.CreateHostRulesHandler(
+			config.CreateHostRulesParams{
 				HostRules: newHostRules,
 			},
 			true,
 		),
-		config.NewReplaceHostRulesInternalServerError().
-			WithPayload(&models.ServerError{Message: err.Error()}),
+	)
+
+	s.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_Success(t *testing.T) {
+	a := assert.New(t)
+
+	s := new(mocks.StoreMock)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
+
+	host := fake.DomainName()
+	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
+
+	s.On("UpdateHostRules", host, hostRules).Return(nil)
+
+	a.Equal(
+		config.NewUpdateHostRulesOK().
+			WithPayload(&hostRules),
+		c.UpdateHostRulesHandler(
+			config.UpdateHostRulesParams{
+				Host:      host,
+				HostRules: hostRules,
+			},
+			true,
+		),
+	)
+
+	s.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_Error(t *testing.T) {
+	a := assert.New(t)
+
+	s := new(mocks.StoreMock)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
+
+	host := fake.DomainName()
+	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	err := fmt.Errorf("UpdateHostRulesError")
+
+	s.On("UpdateHostRules", host, hostRules).Return(err)
+
+	a.Equal(
+		config.NewUpdateHostRulesInternalServerError().
+			WithPayload(&models.ServerError{
+				Message: err.Error(),
+			}),
+		c.UpdateHostRulesHandler(
+			config.UpdateHostRulesParams{
+				Host:      host,
+				HostRules: hostRules,
+			},
+			true,
+		),
 	)
 
 	s.AssertExpectations(t)
