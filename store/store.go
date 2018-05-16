@@ -23,4 +23,6 @@ type Store interface {
 	CreateHostRules(models.HostRules) error
 	// UpdateHostRules update HostRules if it exists
 	UpdateHostRules(host string, hostRules models.HostRules) error
+	// DeleteHostRules delete HostRules if it exists
+	DeleteHostRules(host string) error
 }

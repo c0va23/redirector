@@ -136,3 +136,14 @@ func (rs *RedisStore) UpdateHostRules(host string, hostRules models.HostRules) e
 
 	return nil
 }
+
+// DeleteHostRules if host exists
+func (rs *RedisStore) DeleteHostRules(host string) error {
+	if count, err := rs.Cmder.Cmd("DEL", host).Int(); nil != err {
+		return err
+	} else if 0 == count {
+		return store.ErrNotFound
+	}
+
+	return nil
+}

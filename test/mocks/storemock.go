@@ -30,6 +30,12 @@ func (s *StoreMock) UpdateHostRules(host string, hostRules models.HostRules) err
 	return args.Error(0)
 }
 
+// DeleteHostRules for store mock
+func (s *StoreMock) DeleteHostRules(host string) error {
+	args := s.MethodCalled("DeleteHostRules", host)
+	return args.Error(0)
+}
+
 // GetHostRules for store mock
 func (s *StoreMock) GetHostRules(host string) (*models.HostRules, error) {
 	args := s.MethodCalled("GetHostRules", host)

@@ -484,3 +484,58 @@ func TestUpdateHostRules_SuccessWithUpdateHost(t *testing.T) {
 
 	cmder.AssertExpectations(t)
 }
+
+func TestDeleteHostRules_Success(t *testing.T) {
+	a := assert.New(t)
+
+	host := fake.DomainName()
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "DEL", []interface{}{host}).
+		Return(redis.NewResp(1))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Nil(rs.DeleteHostRules(host))
+
+	cmder.AssertExpectations(t)
+}
+
+func TestDeleteHostRules_NotFoundError(t *testing.T) {
+	a := assert.New(t)
+
+	host := fake.DomainName()
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "DEL", []interface{}{host}).
+		Return(redis.NewResp(0))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Equal(
+		store.ErrNotFound,
+		rs.DeleteHostRules(host),
+	)
+
+	cmder.AssertExpectations(t)
+}
+
+func TestDeleteHostRules_IoErrorError(t *testing.T) {
+	a := assert.New(t)
+
+	host := fake.DomainName()
+	ioErr := fmt.Errorf("DeleteError")
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "DEL", []interface{}{host}).
+		Return(redis.NewRespIOErr(ioErr))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Equal(
+		ioErr,
+		rs.DeleteHostRules(host),
+	)
+
+	cmder.AssertExpectations(t)
+}

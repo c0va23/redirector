@@ -135,6 +135,27 @@ func TestGetHostRule_NotFound(t *testing.T) {
 	s := memstore.NewMemStore()
 
 	hostRule, err := s.GetHostRules(fake.DomainName())
-	a.Nil(err)
 	a.Nil(hostRule)
+	a.Equal(store.ErrNotFound, err)
+}
+
+func TestDeleteHostRules_Success(t *testing.T) {
+	a := assert.New(t)
+	s := memstore.NewMemStore()
+
+	// Host rules exists
+	hostRules := factories.
+		HostRulesFactory.
+		MustCreate().(models.HostRules)
+	a.Nil(s.CreateHostRules(hostRules))
+
+	// Not return error
+	a.Nil(s.DeleteHostRules(hostRules.Host))
+
+	// Delete host rules
+	_, err := s.GetHostRules(hostRules.Host)
+	a.Equal(
+		store.ErrNotFound,
+		err,
+	)
 }

@@ -67,5 +67,19 @@ func (memStore *MemStore) GetHostRules(host string) (*models.HostRules, error) {
 		}
 	}
 
-	return nil, nil
+	return nil, store.ErrNotFound
+}
+
+// DeleteHostRules delete host rules by host
+func (memStore *MemStore) DeleteHostRules(host string) error {
+	for index, hostRules := range memStore.listHostRules {
+		if host == hostRules.Host {
+			memStore.listHostRules = append(
+				memStore.listHostRules[:index],
+				memStore.listHostRules[index+1:]...,
+			)
+			return nil
+		}
+	}
+	return nil
 }
