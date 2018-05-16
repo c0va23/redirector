@@ -45,11 +45,17 @@ func (c *Controller) CreateHostRulesHandler(
 	err := c.store.CreateHostRules(params.HostRules)
 
 	if nil != err {
-		return config.
-			NewCreateHostRulesInternalServerError().
-			WithPayload(&models.ServerError{
-				Message: err.Error(),
-			})
+		switch err {
+		case store.ErrExists:
+			return config.NewCreateHostRulesConflict()
+		default:
+			return config.
+				NewCreateHostRulesInternalServerError().
+				WithPayload(&models.ServerError{
+					Message: err.Error(),
+				})
+
+		}
 	}
 
 	return config.

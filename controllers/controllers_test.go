@@ -11,6 +11,7 @@ import (
 	"github.com/c0va23/redirector/restapi/operations/config"
 	"github.com/c0va23/redirector/restapi/operations/redirect"
 
+	"github.com/c0va23/redirector/store"
 	"github.com/c0va23/redirector/test/factories"
 	"github.com/c0va23/redirector/test/mocks"
 	"github.com/icrowley/fake"
@@ -83,7 +84,30 @@ func TestCreateHostRulesHandler_Success(t *testing.T) {
 	s.AssertExpectations(t)
 }
 
-func TestCreateHostRulesHandler_Error(t *testing.T) {
+func TestCreateHostRulesHandler_ExistsError(t *testing.T) {
+	a := assert.New(t)
+
+	s := new(mocks.StoreMock)
+	r := new(mocks.ResolverMock)
+	c := controllers.NewController(s, r)
+
+	newHostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	s.On("CreateHostRules", newHostRules).Return(store.ErrExists)
+
+	a.Equal(
+		config.NewCreateHostRulesConflict(),
+		c.CreateHostRulesHandler(
+			config.CreateHostRulesParams{
+				HostRules: newHostRules,
+			},
+			true,
+		),
+	)
+
+	s.AssertExpectations(t)
+}
+
+func TestCreateHostRulesHandler_OtherError(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
