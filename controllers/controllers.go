@@ -44,23 +44,21 @@ func (c *Controller) CreateHostRulesHandler(
 ) middleware.Responder {
 	err := c.store.CreateHostRules(params.HostRules)
 
-	if nil != err {
-		switch err {
-		case store.ErrExists:
-			return config.NewCreateHostRulesConflict()
-		default:
-			return config.
-				NewCreateHostRulesInternalServerError().
-				WithPayload(&models.ServerError{
-					Message: err.Error(),
-				})
+	switch err {
+	case nil:
+		return config.
+			NewCreateHostRulesOK().
+			WithPayload(&params.HostRules)
+	case store.ErrExists:
+		return config.NewCreateHostRulesConflict()
+	default:
+		return config.
+			NewCreateHostRulesInternalServerError().
+			WithPayload(&models.ServerError{
+				Message: err.Error(),
+			})
 
-		}
 	}
-
-	return config.
-		NewCreateHostRulesOK().
-		WithPayload(&params.HostRules)
 }
 
 // UpdateHostRulesHandler is handler for UpdateHostRules
