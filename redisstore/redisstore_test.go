@@ -7,6 +7,7 @@ import (
 
 	"github.com/mediocregopher/radix.v2/redis"
 
+	"github.com/icrowley/fake"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/c0va23/redirector/models"
@@ -150,67 +151,6 @@ func TestListHostRules_DecoreError(t *testing.T) {
 	cmder.AssertExpectations(t)
 }
 
-func TestReplaceHostRules_Success(t *testing.T) {
-	a := assert.New(t)
-
-	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
-	hostRuleJson, _ := json.Marshal(hostRule)
-
-	cmder := new(mocks.CmderMock)
-	cmder.On("Cmd", "SET", []interface{}{
-		hostRule.Host,
-		string(hostRuleJson),
-	}).Return(redis.NewRespSimple("OK"))
-
-	rs := redisstore.NewRedisStore(cmder)
-
-	err := rs.ReplaceHostRules(hostRule)
-	a.Nil(err)
-
-	cmder.AssertExpectations(t)
-}
-
-func TestReplaceHostRules_IoError(t *testing.T) {
-	a := assert.New(t)
-
-	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
-	hostRuleJson, _ := json.Marshal(hostRule)
-
-	cmder := new(mocks.CmderMock)
-	ioErr := fmt.Errorf("Some IO error")
-	cmder.On("Cmd", "SET", []interface{}{
-		hostRule.Host,
-		string(hostRuleJson),
-	}).Return(redis.NewRespIOErr(ioErr))
-
-	rs := redisstore.NewRedisStore(cmder)
-
-	err := rs.ReplaceHostRules(hostRule)
-	a.EqualError(err, ioErr.Error())
-
-	cmder.AssertExpectations(t)
-}
-
-func TestReplaceHostRules_SetNotOk(t *testing.T) {
-	a := assert.New(t)
-
-	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
-	hostRuleJson, _ := json.Marshal(hostRule)
-
-	cmder := new(mocks.CmderMock)
-	cmder.On("Cmd", "SET", []interface{}{
-		hostRule.Host,
-		string(hostRuleJson),
-	}).Return(redis.NewResp(nil))
-
-	rs := redisstore.NewRedisStore(cmder)
-
-	err := rs.ReplaceHostRules(hostRule)
-	a.EqualError(err, "response is nil")
-
-	cmder.AssertExpectations(t)
-}
-
 func TestGetHostRules_Success(t *testing.T) {
 	a := assert.New(t)
 
@@ -271,6 +211,276 @@ func TestGetHostRules_JsonError(t *testing.T) {
 	rs := redisstore.NewRedisStore(cmder)
 	_, err := rs.GetHostRules(host)
 	a.EqualError(err, "invalid character 'e' looking for beginning of value")
+
+	cmder.AssertExpectations(t)
+}
+
+func TestCreateHostRules_IoError(t *testing.T) {
+	a := assert.New(t)
+
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJson, _ := json.Marshal(hostRule)
+
+	cmder := new(mocks.CmderMock)
+	ioErr := fmt.Errorf("Some IO error")
+	cmder.On("Cmd", "SETNX", []interface{}{
+		hostRule.Host,
+		string(hostRuleJson),
+	}).Return(redis.NewRespIOErr(ioErr))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.EqualError(
+		rs.CreateHostRules(hostRule),
+		ioErr.Error(),
+	)
+
+	cmder.AssertExpectations(t)
+}
+
+func TestCreateHostRules_Exists(t *testing.T) {
+	a := assert.New(t)
+
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJson, _ := json.Marshal(hostRule)
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "SETNX", []interface{}{
+		hostRule.Host,
+		string(hostRuleJson),
+	}).Return(redis.NewResp(0))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Equal(
+		rs.CreateHostRules(hostRule),
+		store.Exists,
+	)
+
+	cmder.AssertExpectations(t)
+}
+
+func TestCreateHostRules_Success(t *testing.T) {
+	a := assert.New(t)
+
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJson, _ := json.Marshal(hostRule)
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "SETNX", []interface{}{
+		hostRule.Host,
+		string(hostRuleJson),
+	}).Return(redis.NewResp(1))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	// Not return error
+	a.Nil(rs.CreateHostRules(hostRule))
+
+	cmder.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_ExistsError(t *testing.T) {
+	a := assert.New(t)
+
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+
+	ioErr := fmt.Errorf("Some IO error")
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		hostRule.Host,
+	}).Return(redis.NewRespIOErr(ioErr))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Equal(
+		ioErr,
+		rs.UpdateHostRules(hostRule.Host, hostRule),
+	)
+	cmder.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_NotFound(t *testing.T) {
+	a := assert.New(t)
+
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		hostRule.Host,
+	}).Return(redis.NewResp(0))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Equal(
+		store.NotFound,
+		rs.UpdateHostRules(hostRule.Host, hostRule),
+	)
+	cmder.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_SetErrorWithoutUpdateHost(t *testing.T) {
+	a := assert.New(t)
+
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJson, _ := json.Marshal(&hostRule)
+
+	ioErr := fmt.Errorf("Some IO error")
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		hostRule.Host,
+	}).Return(redis.NewResp(1))
+
+	cmder.On("Cmd", "SET", []interface{}{
+		hostRule.Host,
+		string(hostRuleJson),
+	}).Return(redis.NewRespIOErr(ioErr))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Equal(
+		ioErr,
+		rs.UpdateHostRules(hostRule.Host, hostRule),
+	)
+	cmder.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_SuccessWithoutUpdateHost(t *testing.T) {
+	a := assert.New(t)
+
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJson, _ := json.Marshal(&hostRule)
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		hostRule.Host,
+	}).Return(redis.NewResp(1))
+
+	cmder.On("Cmd", "SET", []interface{}{
+		hostRule.Host,
+		string(hostRuleJson),
+	}).Return(redis.NewRespSimple("OK"))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Nil(rs.UpdateHostRules(hostRule.Host, hostRule))
+
+	cmder.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_TargetHostExistsError(t *testing.T) {
+	a := assert.New(t)
+
+	sourceHost := fake.DomainName()
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	ioErr := fmt.Errorf("Some IO error")
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		sourceHost,
+	}).Return(redis.NewResp(1))
+
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		hostRule.Host,
+	}).Return(redis.NewRespIOErr(ioErr))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Equal(
+		ioErr,
+		rs.UpdateHostRules(sourceHost, hostRule),
+	)
+
+	cmder.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_TargetHostExists(t *testing.T) {
+	a := assert.New(t)
+
+	sourceHost := fake.DomainName()
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		sourceHost,
+	}).Return(redis.NewResp(1))
+
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		hostRule.Host,
+	}).Return(redis.NewResp(1))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Equal(
+		store.Exists,
+		rs.UpdateHostRules(sourceHost, hostRule),
+	)
+
+	cmder.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_SourceHostDelError(t *testing.T) {
+	a := assert.New(t)
+
+	sourceHost := fake.DomainName()
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJSON, _ := json.Marshal(&hostRule)
+	ioErr := fmt.Errorf("Some IO error")
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		sourceHost,
+	}).Return(redis.NewResp(1))
+
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		hostRule.Host,
+	}).Return(redis.NewResp(0))
+	cmder.On("Cmd", "SET", []interface{}{
+		hostRule.Host,
+		string(hostRuleJSON),
+	}).Return(redis.NewRespSimple("OK"))
+	cmder.On("Cmd", "DEL", []interface{}{
+		sourceHost,
+	}).Return(redis.NewRespIOErr(ioErr))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Equal(
+		ioErr,
+		rs.UpdateHostRules(sourceHost, hostRule),
+	)
+
+	cmder.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_SuccessWithUpdateHost(t *testing.T) {
+	a := assert.New(t)
+
+	sourceHost := fake.DomainName()
+	hostRule := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	hostRuleJSON, _ := json.Marshal(&hostRule)
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		sourceHost,
+	}).Return(redis.NewResp(1))
+
+	cmder.On("Cmd", "EXISTS", []interface{}{
+		hostRule.Host,
+	}).Return(redis.NewResp(0))
+	cmder.On("Cmd", "SET", []interface{}{
+		hostRule.Host,
+		string(hostRuleJSON),
+	}).Return(redis.NewRespSimple("OK"))
+	cmder.On("Cmd", "DEL", []interface{}{
+		sourceHost,
+	}).Return(redis.NewResp(1))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Nil(rs.UpdateHostRules(sourceHost, hostRule))
 
 	cmder.AssertExpectations(t)
 }
