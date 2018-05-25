@@ -19,6 +19,7 @@ var appOptions struct {
 	RedisPoolSize int    `long:"redis-pool-size" description:"Redis pool size" default:"10"`
 	BasicUsername string `long:"basic-username" short:"u" env:"BASIC_USERNAME" description:"Username for Basic auth" required:"true"`
 	BasicPassword string `long:"basic-password" short:"p" env:"BASIC_PASSWORD" description:"Password for Basic auth." required:"true"`
+	Resolver      string `long:"resolver" env:"RESOLVER" description:"Simple or Pattern" default:"simple"`
 }
 
 func configureFlags(api *operations.RedirectorAPI) {
@@ -48,7 +49,15 @@ func buildStore() store.Store {
 }
 
 func buildResolver() resolver.Resolver {
-	return resolver.NewSimpleResolver()
+	switch appOptions.Resolver {
+	case "simple":
+		return new(resolver.SimpleResolver)
+	case "pattern":
+		return new(resolver.PatternResolver)
+	default:
+		log.Panicf("Unknown resolver: %s", appOptions.Resolver)
+		return nil
+	}
 }
 
 var errInvalidBasicCredentials = errors.New("Invalid Basic credentials")
