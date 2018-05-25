@@ -34,13 +34,13 @@ paths:
             type: array
             items:
               $ref: "#/definitions/HostRules"
-
         500:
           $ref: '#/responses/InternalServerError'
+
     post:
-      summary: "Create or replace host rules"
-      description: "Update host rule if host rule exists or create host rule"
-      operationId: replaceHostRules
+      summary: Create host rules
+      description: Create host rule if host rule not exists
+      operationId: createHostRules
       tags:
       - config
       consumes:
@@ -56,14 +56,14 @@ paths:
             $ref: '#/definitions/HostRules'
           required: true
       responses:
-        400:
-          description: "Invalid JSON structure"
-        422:
-          description: "Invalid validation"
         200:
-          description: "Create HostRules"
+          description: HostRules created
           schema:
-            $ref: "#/definitions/HostRules"
+            $ref: '#/definitions/HostRules'
+        400: { $ref: '#/responses/InvalidJSON' }
+        409:
+          description: Host rules already exists
+        422: { $ref: '#/responses/InvalidData' }
         500:
           $ref: '#/responses/InternalServerError'
 
@@ -87,14 +87,59 @@ paths:
       security:
       - apiSecurity: []
       responses:
-        422:
-          description: Invalid validation
-        404:
-          description: HostRule not found by host
+        404: { $ref: '#/responses/NotFound' }
         200:
           description: HostRules with host
           schema:
             $ref: "#/definitions/HostRules"
+        500:
+          $ref: '#/responses/InternalServerError'
+
+    put:
+      summary: Update host rules
+      description: Update host rule if it exists
+      operationId: updateHostRules
+      tags:
+      - config
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      security:
+      - apiSecurity: []
+      parameters:
+        - name: hostRules
+          in: body
+          schema:
+            $ref: '#/definitions/HostRules'
+          required: true
+      responses:
+        200:
+          description: HostRules updated
+          schema:
+            $ref: '#/definitions/HostRules'
+        400: { $ref: '#/responses/InvalidJSON' }
+        404: { $ref: '#/responses/NotFound' }
+        422: { $ref: '#/responses/InvalidData' }
+        500:
+          $ref: '#/responses/InternalServerError'
+
+    delete:
+      summary: Delete host rules
+      description: Delete host rule if it exists
+      operationId: deleteHostRules
+      tags:
+      - config
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      security:
+      - apiSecurity: []
+      responses:
+        204:
+          description: HostRules deleted
+        404: { $ref: '#/responses/NotFound' }
         500:
           $ref: '#/responses/InternalServerError'
 
@@ -139,6 +184,12 @@ responses:
     description: Internal server error
     schema:
       $ref: '#/definitions/ServerError'
+  NotFound:
+    description: Not found
+  InvalidData:
+    description: Invalid data
+  InvalidJSON:
+    description: Invalid JSON
 
 securityDefinitions:
   apiSecurity:

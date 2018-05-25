@@ -18,9 +18,21 @@ func (s *StoreMock) ListHostRules() ([]models.HostRules, error) {
 	return args.Get(0).([]models.HostRules), args.Error(1)
 }
 
-// ReplaceHostRules for store mock
-func (s *StoreMock) ReplaceHostRules(hostRules models.HostRules) error {
-	args := s.MethodCalled("ReplaceHostRules", hostRules)
+// CreateHostRules for store mock
+func (s *StoreMock) CreateHostRules(hostRules models.HostRules) error {
+	args := s.MethodCalled("CreateHostRules", hostRules)
+	return args.Error(0)
+}
+
+// UpdateHostRules for store mock
+func (s *StoreMock) UpdateHostRules(host string, hostRules models.HostRules) error {
+	args := s.MethodCalled("UpdateHostRules", host, hostRules)
+	return args.Error(0)
+}
+
+// DeleteHostRules for store mock
+func (s *StoreMock) DeleteHostRules(host string) error {
+	args := s.MethodCalled("DeleteHostRules", host)
 	return args.Error(0)
 }
 
