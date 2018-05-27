@@ -147,3 +147,10 @@ func (rs *RedisStore) DeleteHostRules(host string) error {
 
 	return nil
 }
+
+// CheckHealth ping redis and return error
+func (rs *RedisStore) CheckHealth() error {
+	_, err := rs.Cmd("PING").Str()
+
+	return err
+}

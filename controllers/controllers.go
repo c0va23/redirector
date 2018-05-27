@@ -143,3 +143,15 @@ func (c *Controller) RedirectHandler(params redirect.RedirectParams) middleware.
 	}
 
 }
+
+// HealthCheckHandler is handler for HealthCheck
+func (c *Controller) HealthCheckHandler(params redirect.HealthcheckParams) middleware.Responder {
+	err := c.store.CheckHealth()
+
+	switch err {
+	case nil:
+		return redirect.NewHealthcheckOK()
+	default:
+		return redirect.NewHealthcheckInternalServerError()
+	}
+}
