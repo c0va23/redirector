@@ -438,3 +438,36 @@ func TestRedirectHandler_Success(t *testing.T) {
 
 	s.AssertExpectations(t)
 }
+
+func TestHealthCheckHandler_Success(t *testing.T) {
+	a := assert.New(t)
+
+	s := new(mocks.StoreMock)
+	r := new(mocks.ResolverMock)
+
+	c := controllers.NewController(s, r)
+
+	s.On("CheckHealth").Return(nil)
+
+	a.Equal(
+		redirect.NewHealthcheckOK(),
+		c.HealthCheckHandler(redirect.NewHealthcheckParams()),
+	)
+}
+
+func TestHealthCheckHandler_Error(t *testing.T) {
+	a := assert.New(t)
+
+	s := new(mocks.StoreMock)
+	r := new(mocks.ResolverMock)
+
+	c := controllers.NewController(s, r)
+
+	err := fmt.Errorf("CheckHealtError")
+	s.On("CheckHealth").Return(err)
+
+	a.Equal(
+		redirect.NewHealthcheckInternalServerError(),
+		c.HealthCheckHandler(redirect.NewHealthcheckParams()),
+	)
+}

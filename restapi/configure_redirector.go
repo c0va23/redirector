@@ -47,6 +47,7 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	api.ConfigGetHostRuleHandler = config.GetHostRuleHandlerFunc(controller.GetHostRulesHandler)
 	api.ConfigDeleteHostRulesHandler = config.DeleteHostRulesHandlerFunc(controller.DeleteHostRulesHandler)
 	api.RedirectRedirectHandler = redirect.RedirectHandlerFunc(controller.RedirectHandler)
+	api.RedirectHealthcheckHandler = redirect.HealthcheckHandlerFunc(controller.HealthCheckHandler)
 
 	api.ServerShutdown = func() {}
 
