@@ -2,10 +2,11 @@ package restapi
 
 import (
 	"errors"
-	"log"
 
 	"github.com/go-openapi/swag"
+	"github.com/sirupsen/logrus"
 
+	"github.com/c0va23/redirector/log"
 	"github.com/c0va23/redirector/memstore"
 	"github.com/c0va23/redirector/redisstore"
 	"github.com/c0va23/redirector/resolver"
@@ -21,6 +22,8 @@ var appOptions struct {
 	BasicPassword string `long:"basic-password" short:"p" env:"BASIC_PASSWORD" description:"Password for Basic auth." required:"true"`
 	Resolver      string `long:"resolver" env:"RESOLVER" description:"Simple or Pattern" default:"simple"`
 }
+
+var builderLogger = log.NewLogger("builer", logrus.InfoLevel)
 
 func configureFlags(api *operations.RedirectorAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -39,11 +42,11 @@ func buildStore() store.Store {
 	case "redis":
 		client, err := redisstore.BuildRedisPool(appOptions.RedisURI, appOptions.RedisPoolSize)
 		if nil != err {
-			log.Fatalf("Redis error: %s", err)
+			builderLogger.Fatalf("Redis error: %s", err)
 		}
 		return redisstore.NewRedisStore(client)
 	default:
-		log.Panicf("Unknown store type: %s", appOptions.StoreType)
+		builderLogger.Fatalf("Unknown store type: %s", appOptions.StoreType)
 		return nil
 	}
 }
@@ -55,15 +58,19 @@ func buildResolver() resolver.Resolver {
 	case "pattern":
 		return new(resolver.PatternResolver)
 	default:
-		log.Panicf("Unknown resolver: %s", appOptions.Resolver)
+		builderLogger.Fatalf("Unknown resolver: %s", appOptions.Resolver)
 		return nil
 	}
 }
 
 var errInvalidBasicCredentials = errors.New("Invalid Basic credentials")
 
+var authLogger = log.NewLogger("auth", logrus.InfoLevel)
+
 func basicAuth(userename, password string) (interface{}, error) {
 	if appOptions.BasicUsername != userename || appOptions.BasicPassword != password {
+		authLogger.WithError(errInvalidBasicCredentials).
+			Errorf(`Invalid credential for username "%s"`, userename)
 		return false, errInvalidBasicCredentials
 	}
 
