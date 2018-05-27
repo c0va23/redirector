@@ -539,3 +539,35 @@ func TestDeleteHostRules_IoErrorError(t *testing.T) {
 
 	cmder.AssertExpectations(t)
 }
+
+func TestCheckHealth_Success(t *testing.T) {
+	a := assert.New(t)
+
+	cmder := new(mocks.CmderMock)
+	cmder.On("Cmd", "PING", ([]interface{})(nil)).
+		Return(redis.NewRespSimple("PONG"))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Nil(rs.CheckHealth())
+
+	cmder.AssertExpectations(t)
+}
+
+func TestCheckHealth_IoError(t *testing.T) {
+	a := assert.New(t)
+
+	cmder := new(mocks.CmderMock)
+	ioErr := fmt.Errorf("IoError")
+	cmder.On("Cmd", "PING", ([]interface{})(nil)).
+		Return(redis.NewRespIOErr(ioErr))
+
+	rs := redisstore.NewRedisStore(cmder)
+
+	a.Equal(
+		ioErr,
+		rs.CheckHealth(),
+	)
+
+	cmder.AssertExpectations(t)
+}

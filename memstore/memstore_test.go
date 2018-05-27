@@ -170,3 +170,10 @@ func TestDeleteHostRules_NotFoundError(t *testing.T) {
 		s.DeleteHostRules(host),
 	)
 }
+
+func TestCheckHealth(t *testing.T) {
+	a := assert.New(t)
+	s := memstore.NewMemStore()
+
+	a.Nil(s.CheckHealth())
+}

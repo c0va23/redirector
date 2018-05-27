@@ -86,3 +86,8 @@ func (memStore *MemStore) DeleteHostRules(host string) error {
 	}
 	return store.ErrNotFound
 }
+
+// CheckHealth always return nil
+func (memStore *MemStore) CheckHealth() error {
+	return nil
+}

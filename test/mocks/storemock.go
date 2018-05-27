@@ -49,3 +49,10 @@ func (s *StoreMock) GetHostRules(host string) (*models.HostRules, error) {
 	}
 	return nil, nil
 }
+
+// CheckHealth for store mock
+func (s *StoreMock) CheckHealth() error {
+	args := s.MethodCalled("CheckHealth")
+
+	return args.Error(0)
+}

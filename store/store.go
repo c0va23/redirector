@@ -25,4 +25,7 @@ type Store interface {
 	UpdateHostRules(host string, hostRules models.HostRules) error
 	// DeleteHostRules delete HostRules if it exists
 	DeleteHostRules(host string) error
+	// Check health status. If health is OK, then should return nil.
+	// Otherwise return error.
+	CheckHealth() error
 }
