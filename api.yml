@@ -143,6 +143,21 @@ paths:
         500:
           $ref: '#/responses/InternalServerError'
 
+  /_healthcheck:
+    get:
+      summary: Check service status
+      operationId: healthcheck
+      description: |
+        If the service can handle requests, it responds with code 200.
+        Otherwise, it will respond with a status of 500.
+      tags:
+      - redirect
+      responses:
+        200:
+          description: Service can handle requests.
+        500:
+          description: Service cannot handle requests.
+
   /{sourcePath}:
     parameters:
     - in: path
