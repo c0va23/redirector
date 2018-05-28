@@ -278,6 +278,14 @@ definitions:
         type: string
         description: "Regex for match source path"
         x-nullable: false
+      resolver:
+        type: string
+        description: "Rule resolver"
+        x-nullable: false
+        default: simple
+        enum:
+        - simple
+        - pattern
       target:
         $ref: '#/definitions/Target'
       activeFrom:
@@ -291,6 +299,7 @@ definitions:
     required:
     - sourcePath
     - target
+    - resolver
     example:
       {
         sourcePath: 'source-path',
