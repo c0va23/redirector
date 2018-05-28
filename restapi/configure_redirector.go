@@ -10,15 +10,19 @@ import (
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	cors "github.com/rs/cors"
+	logrus "github.com/sirupsen/logrus"
 	graceful "github.com/tylerb/graceful"
 
 	"github.com/c0va23/redirector/controllers"
+	"github.com/c0va23/redirector/log"
 	"github.com/c0va23/redirector/restapi/operations"
 	"github.com/c0va23/redirector/restapi/operations/config"
 	"github.com/c0va23/redirector/restapi/operations/redirect"
 )
 
 //go:generate swagger generate server --target .. --name  --spec ../api.yml
+
+var configLogger = log.NewLogger("config", logrus.InfoLevel)
 
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	store := buildStore()
@@ -33,7 +37,7 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	// Expected interface func(string, ...interface{})
 	//
 	// Example:
-	// api.Logger = log.Printf
+	api.Logger = configLogger.Infof
 
 	api.APISecurityAuth = basicAuth
 
@@ -84,5 +88,6 @@ func setupMiddlewares(handler http.Handler) http.Handler {
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
-	return cors.AllowAll().Handler(handler)
+	corsHandler := cors.AllowAll().Handler(handler)
+	return log.Request(corsHandler)
 }

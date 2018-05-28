@@ -164,6 +164,12 @@
   version = "v1.3.0"
 
 [[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
+  version = "v1.0.5"
+
+[[projects]]
   name = "github.com/stretchr/objx"
   packages = ["."]
   revision = "facf9a85c22f48d2f52f2380e4efce1768749a89"
@@ -186,12 +192,27 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  revision = "ab813273cd59e1333f7ae7bff5d027d4aadf528c"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = [
     "context",
     "idna"
   ]
   revision = "b68f30494add4df6bd8ef5e82803f308e7f7c59c"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = [
+    "unix",
+    "windows"
+  ]
+  revision = "c11f84a56e43e20a78cee75a7c034031ecf57d1f"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -233,6 +254,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "cdcc4b42a4f8265ae94fc84b353da1afcbf0d22f8adaf9b1291c112a2831c730"
+  inputs-digest = "16d320f314bd601922e4c3ae46a1caf786a3fa14ed8df74341c9991db723d87c"
   solver-name = "gps-cdcl"
   solver-version = 1
