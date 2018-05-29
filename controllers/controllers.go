@@ -13,11 +13,11 @@ import (
 // Controller implement methods into restapi
 type Controller struct {
 	store    store.Store
-	resolver resolver.Resolver
+	resolver resolver.HostRulesResolver
 }
 
 // NewController initialize new controller
-func NewController(store store.Store, resolver resolver.Resolver) Controller {
+func NewController(store store.Store, resolver resolver.HostRulesResolver) Controller {
 	return Controller{
 		store:    store,
 		resolver: resolver,

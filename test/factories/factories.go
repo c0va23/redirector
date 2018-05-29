@@ -31,6 +31,7 @@ var TargetFactory = factory.NewFactory(models.Target{}).
 // RuleFactory generate models.Rule
 var RuleFactory = factory.NewFactory(models.Rule{}).
 	SubFactory("Target", TargetFactory).
+	Attr("Resolver", func(args factory.Args) (interface{}, error) { return "simple", nil }).
 	Attr("SourcePath", pathFactory)
 
 // HostRulesFactory generate HostRule

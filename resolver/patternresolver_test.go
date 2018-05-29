@@ -14,95 +14,94 @@ import (
 func TestPatternResolver_NotMatchPath(t *testing.T) {
 	a := assert.New(t)
 
-	r := new(resolver.PatternResolver)
-	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	rule := factories.RuleFactory.MustCreate().(models.Rule)
 	path := factories.GeneratePath()
 
-	a.Equal(
-		hostRules.DefaultTarget,
-		r.Resolve(hostRules, path),
-	)
+	a.Nil(resolver.PatternResolver(rule, path))
 }
 
 func TestPatternResolver_MatchSimpleRegexp(t *testing.T) {
 	a := assert.New(t)
 
-	r := new(resolver.PatternResolver)
-	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
+	rule := factories.RuleFactory.MustCreate().(models.Rule)
 
 	a.Equal(
-		hostRules.Rules[0].Target,
-		r.Resolve(hostRules, hostRules.Rules[0].SourcePath),
+		&rule.Target,
+		resolver.PatternResolver(rule, rule.SourcePath),
 	)
 }
 
 func TestPatternResolver_MatchComplexRegexp(t *testing.T) {
 	a := assert.New(t)
 
-	r := new(resolver.PatternResolver)
-	hostRules := factories.HostRulesFactory.MustCreateWithOption(map[string]interface{}{
-		"Rules": []models.Rule{
-			models.Rule{
-				SourcePath: "/(one|two)",
-				Target: models.Target{
-					HTTPCode: 301,
-					Path:     "/three",
-				},
-			},
+	rule := factories.RuleFactory.MustCreateWithOption(map[string]interface{}{
+		"SourcePath": "/(one|two)",
+		"Target": models.Target{
+			HTTPCode: 301,
+			Path:     "/three",
 		},
-	}).(models.HostRules)
+	}).(models.Rule)
 
 	a.Equal(
-		hostRules.Rules[0].Target,
-		r.Resolve(hostRules, "/one"),
+		&rule.Target,
+		resolver.PatternResolver(rule, "/one"),
 	)
 
 	a.Equal(
-		hostRules.Rules[0].Target,
-		r.Resolve(hostRules, "/two"),
+		&rule.Target,
+		resolver.PatternResolver(rule, "/two"),
 	)
 
-	a.Equal(
-		hostRules.DefaultTarget,
-		r.Resolve(hostRules, "/other"),
-	)
+	a.Nil(resolver.PatternResolver(rule, "/other"))
 }
 
 func TestPatternResolver_MatchWithPlaceholder(t *testing.T) {
 	a := assert.New(t)
 
-	r := new(resolver.PatternResolver)
 	var httpCode int32 = 301
-	hostRules := factories.HostRulesFactory.MustCreateWithOption(map[string]interface{}{
-		"Rules": []models.Rule{
-			models.Rule{
-				SourcePath: "/u/(\\d+)",
-				Target: models.Target{
-					HTTPCode: httpCode,
-					Path:     "/users/{0}",
-				},
-			},
+	rule := factories.RuleFactory.MustCreateWithOption(map[string]interface{}{
+		"SourcePath": "/u/(\\d+)",
+		"Target": models.Target{
+			HTTPCode: httpCode,
+			Path:     "/users/{0}",
 		},
-	}).(models.HostRules)
+	}).(models.Rule)
 
 	a.Equal(
-		models.Target{
+		&models.Target{
 			HTTPCode: httpCode,
 			Path:     "/users/123",
 		},
-		r.Resolve(hostRules, "/u/123"),
+		resolver.PatternResolver(rule, "/u/123"),
 	)
 
 	a.Equal(
-		models.Target{
+		&models.Target{
 			HTTPCode: httpCode,
 			Path:     "/users/0",
 		},
-		r.Resolve(hostRules, "/u/0"),
+		resolver.PatternResolver(rule, "/u/0"),
 	)
 
-	a.Equal(
-		hostRules.DefaultTarget,
-		r.Resolve(hostRules, "/u/"),
-	)
+	a.Nil(resolver.PatternResolver(rule, "/u/"))
+}
+
+func TestPatternResolver_InvalidRegexp(t *testing.T) {
+	a := assert.New(t)
+
+	rule := factories.RuleFactory.MustCreateWithOption(map[string]interface{}{
+		"SourcePath": "\\",
+	}).(models.Rule)
+
+	a.Nil(resolver.PatternResolver(rule, "/test"))
+}
+
+func TestPatternResolver_MultipleMatch(t *testing.T) {
+	a := assert.New(t)
+
+	rule := factories.RuleFactory.MustCreateWithOption(map[string]interface{}{
+		"SourcePath": ".",
+	}).(models.Rule)
+
+	a.Nil(resolver.PatternResolver(rule, "/test"))
 }

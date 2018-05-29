@@ -5,23 +5,13 @@ import (
 )
 
 // SimpleResolver is resolver source path by full match (without pattern)
-type SimpleResolver struct{}
-
-// NewSimpleResolver create new SimpleResolver
-func NewSimpleResolver() *SimpleResolver {
-	return new(SimpleResolver)
-}
-
-// Resolve implement Resolver.Resolve
-func (r *SimpleResolver) Resolve(
-	hostRules models.HostRules,
+func SimpleResolver(
+	rule models.Rule,
 	sourcePath string,
-) models.Target {
-	for _, rule := range hostRules.Rules {
-		if rule.SourcePath == sourcePath {
-			return rule.Target
-		}
+) *models.Target {
+	if rule.SourcePath == sourcePath {
+		return &rule.Target
 	}
 
-	return hostRules.DefaultTarget
+	return nil
 }

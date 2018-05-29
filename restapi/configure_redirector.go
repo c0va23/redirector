@@ -15,6 +15,7 @@ import (
 
 	"github.com/c0va23/redirector/controllers"
 	"github.com/c0va23/redirector/log"
+	"github.com/c0va23/redirector/resolver"
 	"github.com/c0va23/redirector/restapi/operations"
 	"github.com/c0va23/redirector/restapi/operations/config"
 	"github.com/c0va23/redirector/restapi/operations/redirect"
@@ -26,9 +27,9 @@ var configLogger = log.NewLogger("config", logrus.InfoLevel)
 
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	store := buildStore()
-	resolver := buildResolver()
+	r := resolver.MultiHostRulesResolver(resolver.DefaultResolvers)
 
-	controller := controllers.NewController(store, resolver)
+	controller := controllers.NewController(store, r)
 
 	// configure the api here
 	api.ServeError = errors.ServeError

@@ -2,45 +2,42 @@ package resolver
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
 
+	"github.com/sirupsen/logrus"
+
+	"github.com/c0va23/redirector/log"
 	"github.com/c0va23/redirector/models"
 )
 
 var placeholderRegexp = regexp.MustCompile("{(\\d+)}")
 
+var patternLogger = log.NewLogger("PatterResolver", logrus.InfoLevel)
+
 // PatternResolver resolve pathes with patterns and replace values in placeholders
-type PatternResolver struct{}
-
-// Resolve implement Resolver.Resolve
-func (r *PatternResolver) Resolve(
-	hostRules models.HostRules,
+func PatternResolver(
+	rule models.Rule,
 	sourcePath string,
-) models.Target {
-	log.Printf("sourcePath: %s", sourcePath)
-	for _, rule := range hostRules.Rules {
-		log.Printf("Pattern: %s", rule.SourcePath)
-		pattern, err := regexp.Compile(rule.SourcePath)
-		if nil != err {
-			log.Printf("Error with path patter %s: %v", rule.SourcePath, err)
-			continue
-		}
-
-		matches := pattern.FindAllStringSubmatch(sourcePath, -1)
-		log.Printf("Matches: %+v", matches)
-		switch len(matches) {
-		case 0:
-			continue
-		case 1:
-			return buildTargetWithPlaceholders(matches[0][1:], rule.Target)
-		default:
-			log.Printf(`Pattern "%s" match more one times path "%s"`, rule.SourcePath, sourcePath)
-		}
+) *models.Target {
+	pattern, err := regexp.Compile(rule.SourcePath)
+	if nil != err {
+		patternLogger.Errorf("Error with path patter %s: %v", rule.SourcePath, err)
+		return nil
 	}
 
-	return hostRules.DefaultTarget
+	matches := pattern.FindAllStringSubmatch(sourcePath, -1)
+	patternLogger.Infof("Matches: %+v", matches)
+	switch len(matches) {
+	case 0:
+		return nil
+	case 1:
+		target := buildTargetWithPlaceholders(matches[0][1:], rule.Target)
+		return &target
+	default:
+		patternLogger.Infof(`Pattern "%s" match more one times path "%s"`, rule.SourcePath, sourcePath)
+		return nil
+	}
 }
 
 func buildTargetWithPlaceholders(matches []string, target models.Target) models.Target {

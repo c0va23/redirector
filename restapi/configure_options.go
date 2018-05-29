@@ -9,7 +9,6 @@ import (
 	"github.com/c0va23/redirector/log"
 	"github.com/c0va23/redirector/memstore"
 	"github.com/c0va23/redirector/redisstore"
-	"github.com/c0va23/redirector/resolver"
 	"github.com/c0va23/redirector/restapi/operations"
 	"github.com/c0va23/redirector/store"
 )
@@ -20,7 +19,6 @@ var appOptions struct {
 	RedisPoolSize int    `long:"redis-pool-size" description:"Redis pool size" default:"10"`
 	BasicUsername string `long:"basic-username" short:"u" env:"BASIC_USERNAME" description:"Username for Basic auth" required:"true"`
 	BasicPassword string `long:"basic-password" short:"p" env:"BASIC_PASSWORD" description:"Password for Basic auth." required:"true"`
-	Resolver      string `long:"resolver" env:"RESOLVER" description:"Simple or Pattern" default:"simple"`
 }
 
 var builderLogger = log.NewLogger("builer", logrus.InfoLevel)
@@ -47,18 +45,6 @@ func buildStore() store.Store {
 		return redisstore.NewRedisStore(client)
 	default:
 		builderLogger.Fatalf("Unknown store type: %s", appOptions.StoreType)
-		return nil
-	}
-}
-
-func buildResolver() resolver.Resolver {
-	switch appOptions.Resolver {
-	case "simple":
-		return new(resolver.SimpleResolver)
-	case "pattern":
-		return new(resolver.PatternResolver)
-	default:
-		builderLogger.Fatalf("Unknown resolver: %s", appOptions.Resolver)
 		return nil
 	}
 }
