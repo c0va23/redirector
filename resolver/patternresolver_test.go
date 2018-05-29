@@ -85,3 +85,23 @@ func TestPatternResolver_MatchWithPlaceholder(t *testing.T) {
 
 	a.Nil(resolver.PatternResolver(rule, "/u/"))
 }
+
+func TestPatternResolver_InvalidRegexp(t *testing.T) {
+	a := assert.New(t)
+
+	rule := factories.RuleFactory.MustCreateWithOption(map[string]interface{}{
+		"SourcePath": "\\",
+	}).(models.Rule)
+
+	a.Nil(resolver.PatternResolver(rule, "/test"))
+}
+
+func TestPatternResolver_MultipleMatch(t *testing.T) {
+	a := assert.New(t)
+
+	rule := factories.RuleFactory.MustCreateWithOption(map[string]interface{}{
+		"SourcePath": ".",
+	}).(models.Rule)
+
+	a.Nil(resolver.PatternResolver(rule, "/test"))
+}
