@@ -52,6 +52,7 @@ func Request(next http.Handler) http.Handler {
 			"method":   req.Method,
 			"path":     req.RequestURI,
 			"status":   resWrapper.Status,
+			"host":     req.Host,
 			"duration": endTime.Sub(startTime).Seconds(),
 		})
 
