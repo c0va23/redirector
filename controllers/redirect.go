@@ -7,7 +7,6 @@ import (
 	"github.com/c0va23/redirector/log"
 	"github.com/c0va23/redirector/resolvers"
 	"github.com/c0va23/redirector/store"
-	"github.com/sirupsen/logrus"
 )
 
 const locationHeader = "Location"
@@ -17,7 +16,7 @@ const (
 	internalServerErrorMessage = "Internal server error"
 )
 
-var redirectLogger = log.NewLogger("RedirectHandler", logrus.InfoLevel)
+var redirectLogger = log.NewLeveledLogger("RedirectHandler")
 
 // RedirectHandler is handler for redirect requests
 type RedirectHandler struct {

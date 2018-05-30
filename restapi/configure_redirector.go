@@ -9,7 +9,6 @@ import (
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	cors "github.com/rs/cors"
-	logrus "github.com/sirupsen/logrus"
 	graceful "github.com/tylerb/graceful"
 
 	"github.com/c0va23/redirector/controllers"
@@ -22,7 +21,7 @@ import (
 
 //go:generate swagger generate server --target .. --name  --spec ../api.yml
 
-var configLogger = log.NewLogger("config", logrus.InfoLevel)
+var configLogger = log.NewLeveledLogger("config")
 
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	store := buildStore()

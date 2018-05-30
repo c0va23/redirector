@@ -38,3 +38,26 @@ func NewLogger(
 
 	return l
 }
+
+var logger = NewLogger("logger", logrus.InfoLevel)
+
+const defaultLoggerLevel = logrus.InfoLevel
+const levelEnvvar = "LOG_LEVEL"
+
+func loggerLevel() logrus.Level {
+	loggerLevel, configured := os.LookupEnv(levelEnvvar)
+	if !configured {
+		return defaultLoggerLevel
+	}
+
+	level, err := logrus.ParseLevel(loggerLevel)
+	if nil != err {
+		logger.WithError(err).Fatalf("Invalid level error: %s", err)
+	}
+	return level
+}
+
+// NewLeveledLogger build logger with level configured with ennvar LOG_LEVEL
+func NewLeveledLogger(logger string) *logrus.Logger {
+	return NewLogger(logger, loggerLevel())
+}

@@ -5,15 +5,13 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/c0va23/redirector/log"
 	"github.com/c0va23/redirector/models"
 )
 
 var placeholderRegexp = regexp.MustCompile("{(\\d+)}")
 
-var patternLogger = log.NewLogger("PatterResolver", logrus.InfoLevel)
+var patternLogger = log.NewLeveledLogger("PatterResolver")
 
 // PatternResolver resolve pathes with patterns and replace values in placeholders
 func PatternResolver(
@@ -27,7 +25,12 @@ func PatternResolver(
 	}
 
 	matches := pattern.FindAllStringSubmatch(sourcePath, -1)
-	patternLogger.Infof("Matches: %+v", matches)
+
+	patternLogger.WithFields(map[string]interface{}{
+		"pattern": rule.SourcePath,
+		"path":    sourcePath,
+	}).Debugf("Path matches: %s", matches)
+
 	switch len(matches) {
 	case 0:
 		return nil
@@ -35,7 +38,7 @@ func PatternResolver(
 		target := buildTargetWithPlaceholders(matches[0][1:], rule.Target)
 		return &target
 	default:
-		patternLogger.Infof(`Pattern "%s" match more one times path "%s"`, rule.SourcePath, sourcePath)
+		patternLogger.Warnf(`Pattern "%s" match more one times path "%s"`, rule.SourcePath, sourcePath)
 		return nil
 	}
 }
