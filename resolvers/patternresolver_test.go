@@ -1,4 +1,4 @@
-package resolver_test
+package resolvers_test
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/c0va23/redirector/models"
-	"github.com/c0va23/redirector/resolver"
+	"github.com/c0va23/redirector/resolvers"
 
 	"github.com/c0va23/redirector/test/factories"
 )
@@ -17,7 +17,7 @@ func TestPatternResolver_NotMatchPath(t *testing.T) {
 	rule := factories.RuleFactory.MustCreate().(models.Rule)
 	path := factories.GeneratePath()
 
-	a.Nil(resolver.PatternResolver(rule, path))
+	a.Nil(resolvers.PatternResolver(rule, path))
 }
 
 func TestPatternResolver_MatchSimpleRegexp(t *testing.T) {
@@ -27,7 +27,7 @@ func TestPatternResolver_MatchSimpleRegexp(t *testing.T) {
 
 	a.Equal(
 		&rule.Target,
-		resolver.PatternResolver(rule, rule.SourcePath),
+		resolvers.PatternResolver(rule, rule.SourcePath),
 	)
 }
 
@@ -44,15 +44,15 @@ func TestPatternResolver_MatchComplexRegexp(t *testing.T) {
 
 	a.Equal(
 		&rule.Target,
-		resolver.PatternResolver(rule, "/one"),
+		resolvers.PatternResolver(rule, "/one"),
 	)
 
 	a.Equal(
 		&rule.Target,
-		resolver.PatternResolver(rule, "/two"),
+		resolvers.PatternResolver(rule, "/two"),
 	)
 
-	a.Nil(resolver.PatternResolver(rule, "/other"))
+	a.Nil(resolvers.PatternResolver(rule, "/other"))
 }
 
 func TestPatternResolver_MatchWithPlaceholder(t *testing.T) {
@@ -72,7 +72,7 @@ func TestPatternResolver_MatchWithPlaceholder(t *testing.T) {
 			HTTPCode: httpCode,
 			Path:     "/users/123",
 		},
-		resolver.PatternResolver(rule, "/u/123"),
+		resolvers.PatternResolver(rule, "/u/123"),
 	)
 
 	a.Equal(
@@ -80,10 +80,10 @@ func TestPatternResolver_MatchWithPlaceholder(t *testing.T) {
 			HTTPCode: httpCode,
 			Path:     "/users/0",
 		},
-		resolver.PatternResolver(rule, "/u/0"),
+		resolvers.PatternResolver(rule, "/u/0"),
 	)
 
-	a.Nil(resolver.PatternResolver(rule, "/u/"))
+	a.Nil(resolvers.PatternResolver(rule, "/u/"))
 }
 
 func TestPatternResolver_InvalidRegexp(t *testing.T) {
@@ -93,7 +93,7 @@ func TestPatternResolver_InvalidRegexp(t *testing.T) {
 		"SourcePath": "\\",
 	}).(models.Rule)
 
-	a.Nil(resolver.PatternResolver(rule, "/test"))
+	a.Nil(resolvers.PatternResolver(rule, "/test"))
 }
 
 func TestPatternResolver_MultipleMatch(t *testing.T) {
@@ -103,5 +103,5 @@ func TestPatternResolver_MultipleMatch(t *testing.T) {
 		"SourcePath": ".",
 	}).(models.Rule)
 
-	a.Nil(resolver.PatternResolver(rule, "/test"))
+	a.Nil(resolvers.PatternResolver(rule, "/test"))
 }

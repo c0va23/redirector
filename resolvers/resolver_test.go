@@ -1,10 +1,10 @@
-package resolver_test
+package resolvers_test
 
 import (
 	"testing"
 
 	"github.com/c0va23/redirector/models"
-	"github.com/c0va23/redirector/resolver"
+	"github.com/c0va23/redirector/resolvers"
 	"github.com/c0va23/redirector/test/factories"
 
 	"github.com/stretchr/testify/assert"
@@ -14,7 +14,7 @@ func TestResolve_WithoutResolvers(t *testing.T) {
 	a := assert.New(t)
 
 	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
-	emptyResolvers := resolver.MultiHostRulesResolver{}
+	emptyResolvers := resolvers.MultiHostRulesResolver{}
 
 	a.Equal(
 		hostRules.DefaultTarget,
@@ -35,7 +35,7 @@ func TestResolve_ResolveNotMatch(t *testing.T) {
 		return nil
 	}
 
-	hostRulesResolver := resolver.MultiHostRulesResolver{
+	hostRulesResolver := resolvers.MultiHostRulesResolver{
 		"fakeResolver": ruleResolver,
 	}
 
@@ -58,7 +58,7 @@ func TestResolve_ResolveMatch(t *testing.T) {
 		return &rule.Target
 	}
 
-	hostRulesResolver := resolver.MultiHostRulesResolver{
+	hostRulesResolver := resolvers.MultiHostRulesResolver{
 		rule.Resolver: ruleResolver,
 	}
 
