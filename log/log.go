@@ -17,7 +17,7 @@ func (logger loggerHook) Levels() []logrus.Level {
 	return logrus.AllLevels
 }
 
-const timeFormat = "2006-01-02T15:04:05.999Z"
+const timeFormat = "2006-01-02T15:04:05Z"
 
 // NewLogger create new configured logger
 func NewLogger(

@@ -34,10 +34,10 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 
 	// configure the api here
 	api.ServeError = func(rw http.ResponseWriter, req *http.Request, err error) {
-		configLogger.WithError(err).Errorf("ServerError %#v", err)
 		if apiErr, ok := err.(errors.Error); ok && http.StatusNotFound == apiErr.Code() {
 			redirectHandler.ServeHTTP(rw, req)
 		} else {
+			configLogger.WithError(err).Errorf("ServerError %#v", err)
 			errors.ServeError(rw, req, err)
 		}
 	}
