@@ -4,7 +4,6 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/c0va23/redirector/models"
-	"github.com/c0va23/redirector/resolver"
 	"github.com/c0va23/redirector/restapi/operations/config"
 	"github.com/c0va23/redirector/restapi/operations/redirect"
 	"github.com/c0va23/redirector/store"
@@ -12,15 +11,13 @@ import (
 
 // Controller implement methods into restapi
 type Controller struct {
-	store    store.Store
-	resolver resolver.HostRulesResolver
+	store store.Store
 }
 
 // NewController initialize new controller
-func NewController(store store.Store, resolver resolver.HostRulesResolver) Controller {
+func NewController(store store.Store) Controller {
 	return Controller{
-		store:    store,
-		resolver: resolver,
+		store: store,
 	}
 }
 
@@ -124,24 +121,6 @@ func (c *Controller) DeleteHostRulesHandler(
 			})
 
 	}
-}
-
-// RedirectHandler is handler for Redirect
-func (c *Controller) RedirectHandler(params redirect.RedirectParams) middleware.Responder {
-	hostRules, err := c.store.GetHostRules(params.Host)
-
-	switch err {
-	case nil:
-		target := c.resolver.Resolve(*hostRules, params.SourcePath)
-		return redirect.NewRedirectDefault(int(target.HTTPCode)).
-			WithLocation(target.Path)
-	case store.ErrNotFound:
-		return redirect.NewRedirectNotFound()
-	default:
-		return redirect.NewRedirectInternalServerError().
-			WithPayload(&models.ServerError{Message: err.Error()})
-	}
-
 }
 
 // HealthCheckHandler is handler for HealthCheck

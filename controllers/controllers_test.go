@@ -21,8 +21,7 @@ func TestListHostRulesHandler_Success(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	listHostRules := make([]models.HostRules, 0, 3)
 	for i := 0; i < cap(listHostRules); i++ {
@@ -43,8 +42,7 @@ func TestListHostRulesHandler_Error(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	err := fmt.Errorf("ListHostRulesError")
 
@@ -63,8 +61,7 @@ func TestCreateHostRulesHandler_Success(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	newHostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
 
@@ -88,8 +85,7 @@ func TestCreateHostRulesHandler_ExistsError(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	newHostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
 	s.On("CreateHostRules", newHostRules).Return(store.ErrExists)
@@ -111,8 +107,7 @@ func TestCreateHostRulesHandler_OtherError(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	newHostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
 	err := fmt.Errorf("CreateHostRulesError")
@@ -136,8 +131,7 @@ func TestUpdateHostRules_Success(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	host := fake.DomainName()
 	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
@@ -163,8 +157,7 @@ func TestUpdateHostRules_NotFoundError(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	host := fake.DomainName()
 	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
@@ -189,8 +182,7 @@ func TestUpdateHostRules_OtherError(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	host := fake.DomainName()
 	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
@@ -224,9 +216,7 @@ func TestGetHostRules_Error(t *testing.T) {
 	s := new(mocks.StoreMock)
 	s.On("GetHostRules", host).Return(nil, err)
 
-	r := new(mocks.ResolverMock)
-
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	a.Equal(
 		c.GetHostRulesHandler(
@@ -249,9 +239,7 @@ func TestGetHostRules_NotFound(t *testing.T) {
 	s := new(mocks.StoreMock)
 	s.On("GetHostRules", host).Return(nil, store.ErrNotFound)
 
-	r := new(mocks.ResolverMock)
-
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	a.Equal(
 		c.GetHostRulesHandler(
@@ -276,9 +264,7 @@ func TestGetHostRules_Found(t *testing.T) {
 	s := new(mocks.StoreMock)
 	s.On("GetHostRules", hostRules.Host).Return(&hostRules, nil)
 
-	r := new(mocks.ResolverMock)
-
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	a.Equal(
 		c.GetHostRulesHandler(
@@ -302,9 +288,7 @@ func TestDeleteHostRules_Success(t *testing.T) {
 	s := new(mocks.StoreMock)
 	s.On("DeleteHostRules", host).Return(nil)
 
-	r := new(mocks.ResolverMock)
-
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	a.Equal(
 		c.DeleteHostRulesHandler(
@@ -327,9 +311,7 @@ func TestDeleteHostRules_NotFoundError(t *testing.T) {
 	s := new(mocks.StoreMock)
 	s.On("DeleteHostRules", host).Return(store.ErrNotFound)
 
-	r := new(mocks.ResolverMock)
-
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	a.Equal(
 		c.DeleteHostRulesHandler(
@@ -353,9 +335,7 @@ func TestDeleteHostRules_OtherError(t *testing.T) {
 	s := new(mocks.StoreMock)
 	s.On("DeleteHostRules", host).Return(otherErr)
 
-	r := new(mocks.ResolverMock)
-
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	a.Equal(
 		c.DeleteHostRulesHandler(
@@ -373,79 +353,12 @@ func TestDeleteHostRules_OtherError(t *testing.T) {
 	s.AssertExpectations(t)
 }
 
-func TestRedirectHandler_ServerError(t *testing.T) {
-	a := assert.New(t)
-
-	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
-
-	err := fmt.Errorf("GetHostRulesErr")
-	host := fake.DomainName()
-	s.On("GetHostRules", host).Return(nil, err)
-
-	a.Equal(
-		c.RedirectHandler(redirect.RedirectParams{
-			Host: host,
-		}),
-		redirect.NewRedirectInternalServerError().
-			WithPayload(&models.ServerError{Message: err.Error()}),
-	)
-
-	s.AssertExpectations(t)
-}
-
-func TestRedirectHandler_NotFound(t *testing.T) {
-	a := assert.New(t)
-
-	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
-
-	host := fake.DomainName()
-	s.On("GetHostRules", host).Return(nil, store.ErrNotFound)
-
-	a.Equal(
-		c.RedirectHandler(redirect.RedirectParams{
-			Host: host,
-		}),
-		redirect.NewRedirectNotFound(),
-	)
-
-	s.AssertExpectations(t)
-}
-
-func TestRedirectHandler_Success(t *testing.T) {
-	a := assert.New(t)
-
-	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
-	c := controllers.NewController(s, r)
-
-	path := factories.GeneratePath()
-	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
-	s.On("GetHostRules", hostRules.Host).Return(&hostRules, nil)
-	r.On("Resolve", hostRules, path).Return(hostRules.DefaultTarget)
-
-	a.Equal(
-		c.RedirectHandler(redirect.RedirectParams{
-			Host:       hostRules.Host,
-			SourcePath: path,
-		}),
-		redirect.NewRedirectDefault(int(hostRules.DefaultTarget.HTTPCode)).
-			WithLocation(hostRules.DefaultTarget.Path),
-	)
-
-	s.AssertExpectations(t)
-}
-
 func TestHealthCheckHandler_Success(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
 
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	s.On("CheckHealth").Return(nil)
 
@@ -459,9 +372,8 @@ func TestHealthCheckHandler_Error(t *testing.T) {
 	a := assert.New(t)
 
 	s := new(mocks.StoreMock)
-	r := new(mocks.ResolverMock)
 
-	c := controllers.NewController(s, r)
+	c := controllers.NewController(s)
 
 	err := fmt.Errorf("CheckHealtError")
 	s.On("CheckHealth").Return(err)
