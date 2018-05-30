@@ -53,6 +53,9 @@ bump-minor-version:
 bump-patch-version:
 	./scripts/bump_version.go VERSION patch
 
+commit-version:
+	git commit VERSION -m "Bump version $(shell cat VERSION)"
+
 tag-version:
 	git tag $(shell cat VERSION)
 
