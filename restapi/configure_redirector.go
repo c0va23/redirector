@@ -5,7 +5,6 @@ package restapi
 import (
 	"crypto/tls"
 	"net/http"
-	"strings"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
@@ -27,12 +26,21 @@ var configLogger = log.NewLogger("config", logrus.InfoLevel)
 
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	store := buildStore()
-	r := resolver.MultiHostRulesResolver(resolver.DefaultResolvers)
 
-	controller := controllers.NewController(store, r)
+	controller := controllers.NewController(store)
+
+	r := resolver.MultiHostRulesResolver(resolver.DefaultResolvers)
+	redirectHandler := controllers.NewRedirectHandler(store, r)
 
 	// configure the api here
-	api.ServeError = errors.ServeError
+	api.ServeError = func(rw http.ResponseWriter, req *http.Request, err error) {
+		configLogger.WithError(err).Errorf("ServerError %#v", err)
+		if apiErr, ok := err.(errors.Error); ok && http.StatusNotFound == apiErr.Code() {
+			redirectHandler.ServeHTTP(rw, req)
+		} else {
+			errors.ServeError(rw, req, err)
+		}
+	}
 
 	// Set your custom logger if needed. Default one is log.Printf
 	// Expected interface func(string, ...interface{})
@@ -51,7 +59,6 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	api.ConfigUpdateHostRulesHandler = config.UpdateHostRulesHandlerFunc(controller.UpdateHostRulesHandler)
 	api.ConfigGetHostRuleHandler = config.GetHostRuleHandlerFunc(controller.GetHostRulesHandler)
 	api.ConfigDeleteHostRulesHandler = config.DeleteHostRulesHandlerFunc(controller.DeleteHostRulesHandler)
-	api.RedirectRedirectHandler = redirect.RedirectHandlerFunc(controller.RedirectHandler)
 	api.RedirectHealthcheckHandler = redirect.HealthcheckHandlerFunc(controller.HealthCheckHandler)
 
 	api.ServerShutdown = func() {}
@@ -71,19 +78,10 @@ func configureTLS(tlsConfig *tls.Config) {
 func configureServer(s *graceful.Server, scheme, addr string) {
 }
 
-func returnHostHeader(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		hostParts := strings.Split(req.Host, ":")
-		host := hostParts[0]
-		req.Header.Add("Host", host)
-		next.ServeHTTP(res, req)
-	})
-}
-
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.
 // The middleware executes after routing but before authentication, binding and validation
 func setupMiddlewares(handler http.Handler) http.Handler {
-	return returnHostHeader(handler)
+	return handler
 }
 
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.

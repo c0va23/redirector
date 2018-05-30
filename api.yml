@@ -158,42 +158,6 @@ paths:
         500:
           description: Service cannot handle requests.
 
-  /{sourcePath}:
-    parameters:
-    - in: path
-      name: sourcePath
-      type: string
-      description: "*sourcePath* for match rule"
-      required: true
-    - in: header
-      name: Host
-      type: string
-      description: "*Host* for match rule"
-      required: true
-    get:
-      summary: "Source path for redirect"
-      description: |
-        If with path match any defined rule, then it redirect to rule target.
-        Otherwise return 404 response.
-      tags:
-      - redirect
-      operationId: redirect
-      responses:
-        404:
-          description: 'Response when rule for sourcePath and host not found'
-        500:
-          $ref: '#/responses/InternalServerError'
-        default:
-          description: |
-            Response when rule for `sourcePath` and host is found
-
-            Code of response equal `http_code` from `HostRule.Target`.
-            And header `Location` equal `target_path` from `HostRule.target`.
-          headers:
-            Location:
-              description: Redirect target path
-              type: string
-
 responses:
   InternalServerError:
     description: Internal server error
