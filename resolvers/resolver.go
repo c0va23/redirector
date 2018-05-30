@@ -1,4 +1,4 @@
-package resolver
+package resolvers
 
 import (
 	"github.com/c0va23/redirector/models"
@@ -18,10 +18,10 @@ var DefaultResolvers = map[string]RuleResolver{
 	"pattern": PatternResolver,
 }
 
-// MultiHostRulesResolver is wrapper for multpe resovler
+// MultiHostRulesResolver is wrapper for multple resolver
 type MultiHostRulesResolver map[string]RuleResolver
 
-// Resolve match each rule by resolver and reutrn if it return target.
+// Resolve match each rule by resolver and return if it return target.
 // Otherwise return default target.
 func (r MultiHostRulesResolver) Resolve(
 	hostRules models.HostRules,

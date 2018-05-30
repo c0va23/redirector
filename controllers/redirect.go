@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/c0va23/redirector/log"
-	"github.com/c0va23/redirector/resolver"
+	"github.com/c0va23/redirector/resolvers"
 	"github.com/c0va23/redirector/store"
 	"github.com/sirupsen/logrus"
 )
@@ -22,13 +22,13 @@ var redirectLogger = log.NewLogger("RedirectHandler", logrus.InfoLevel)
 // RedirectHandler is handler for redirect requests
 type RedirectHandler struct {
 	store.Store
-	resolver.HostRulesResolver
+	resolvers.HostRulesResolver
 }
 
 // NewRedirectHandler build new RedirectHandler
 func NewRedirectHandler(
 	store store.Store,
-	resolver resolver.HostRulesResolver,
+	resolver resolvers.HostRulesResolver,
 ) *RedirectHandler {
 	return &RedirectHandler{
 		Store:             store,

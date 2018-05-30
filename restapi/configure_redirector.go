@@ -14,7 +14,7 @@ import (
 
 	"github.com/c0va23/redirector/controllers"
 	"github.com/c0va23/redirector/log"
-	"github.com/c0va23/redirector/resolver"
+	"github.com/c0va23/redirector/resolvers"
 	"github.com/c0va23/redirector/restapi/operations"
 	"github.com/c0va23/redirector/restapi/operations/config"
 	"github.com/c0va23/redirector/restapi/operations/redirect"
@@ -29,8 +29,8 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 
 	controller := controllers.NewController(store)
 
-	r := resolver.MultiHostRulesResolver(resolver.DefaultResolvers)
-	redirectHandler := controllers.NewRedirectHandler(store, r)
+	resolver := resolvers.MultiHostRulesResolver(resolvers.DefaultResolvers)
+	redirectHandler := controllers.NewRedirectHandler(store, resolver)
 
 	// configure the api here
 	api.ServeError = func(rw http.ResponseWriter, req *http.Request, err error) {

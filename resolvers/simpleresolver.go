@@ -1,4 +1,4 @@
-package resolver
+package resolvers
 
 import (
 	"github.com/c0va23/redirector/models"
