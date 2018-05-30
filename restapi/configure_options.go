@@ -21,7 +21,7 @@ var appOptions struct {
 	BasicPassword string `long:"basic-password" short:"p" env:"BASIC_PASSWORD" description:"Password for Basic auth." required:"true"`
 }
 
-var builderLogger = log.NewLogger("builer", logrus.InfoLevel)
+var builderLogger = log.NewLogger("builder", logrus.InfoLevel)
 
 func configureFlags(api *operations.RedirectorAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
