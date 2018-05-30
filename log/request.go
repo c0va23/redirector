@@ -3,8 +3,6 @@ package log
 import (
 	"net/http"
 	"time"
-
-	logrus "github.com/sirupsen/logrus"
 )
 
 type responseWriterWrapper struct {
@@ -33,7 +31,7 @@ func (rww *responseWriterWrapper) Header() http.Header {
 	return rww.ResponseWriter.Header()
 }
 
-var requestLogger = NewLogger("HTTP", logrus.InfoLevel)
+var requestLogger = NewLeveledLogger("HTTP")
 
 // Request is middleware for request logging
 func Request(next http.Handler) http.Handler {

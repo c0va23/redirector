@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/go-openapi/swag"
-	"github.com/sirupsen/logrus"
 
 	"github.com/c0va23/redirector/log"
 	"github.com/c0va23/redirector/memstore"
@@ -21,7 +20,7 @@ var appOptions struct {
 	BasicPassword string `long:"basic-password" short:"p" env:"BASIC_PASSWORD" description:"Password for Basic auth." required:"true"`
 }
 
-var builderLogger = log.NewLogger("builer", logrus.InfoLevel)
+var builderLogger = log.NewLeveledLogger("builder")
 
 func configureFlags(api *operations.RedirectorAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -51,12 +50,12 @@ func buildStore() store.Store {
 
 var errInvalidBasicCredentials = errors.New("Invalid Basic credentials")
 
-var authLogger = log.NewLogger("auth", logrus.InfoLevel)
+var authLogger = log.NewLeveledLogger("auth")
 
 func basicAuth(userename, password string) (interface{}, error) {
 	if appOptions.BasicUsername != userename || appOptions.BasicPassword != password {
 		authLogger.WithError(errInvalidBasicCredentials).
-			Errorf(`Invalid credential for username "%s"`, userename)
+			Warnf(`Invalid credential for username "%s"`, userename)
 		return false, errInvalidBasicCredentials
 	}
 
