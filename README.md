@@ -135,3 +135,15 @@ store:
 Help Options:
   -h, --help                      Show this help message
 ```
+
+### Logger level
+
+Logger level can be configured with ennvar LOG_LEVEL.
+
+Allowed values:
+- debug
+- info
+- warn
+- error
+- fatal
+- panic
