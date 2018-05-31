@@ -12,7 +12,7 @@ Supported store engine:
 
 Supported match / resolve algorithm:
 - `simple` (full match of host and path, not change target)
-- `regex` (**not yet implemented**, full match host, regex path path, change target by pattern)
+- `pattern` (full match host, match path by regexp, replace target placeholders by pattern groups)
 
 
 ### Use cases
@@ -36,6 +36,13 @@ Supported match / resolve algorithm:
 3. Find rule with selected resolve algorithm.
 4. If rule not found, then redirect to default target url and HTTP code.
 5. If rule found, then redirect to rule URL and HTTP code.
+
+
+### Pattern resolver example
+
+If we have: source `^/(.)$` and target path `https://example.org/promocode/{0}`.
+
+Then request to path `/PROMOCODE` resolved to `https://example.org/promocode/PROMOCODE`.
 
 
 ### Ready for production use?
