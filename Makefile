@@ -17,10 +17,10 @@ gen-swagger:
 
 lint:
 	go vet ./...
-	bash -c "test $$(goimports -d $$(git ls-files *.go) | tee /dev/stderr | wc -l) -eq 0"
+	test $$(goimports -d $$(git ls-files *.go) | tee /dev/stderr | wc -l) -eq 0
 	golint -set_exit_status $$(go list ./...)
-	errcheck $$(go list ./... | grep -v -E $(ERRCHECK_EXCLUDE_PATTERN))
-	staticcheck ./...
+	env CGO_ENABLED=0 errcheck $$(go list ./... | grep -v -E $(ERRCHECK_EXCLUDE_PATTERN))
+	env CGO_ENABLED=0 staticcheck ./...
 
 run-test:
 	go test -cover ./...
