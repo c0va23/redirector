@@ -201,7 +201,8 @@
   name = "golang.org/x/net"
   packages = [
     "context",
-    "idna"
+    "idna",
+    "netutil"
   ]
   revision = "db08ff08e8622530d9ed3a0e8ac279f6d4c02196"
 
@@ -254,6 +255,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "16d320f314bd601922e4c3ae46a1caf786a3fa14ed8df74341c9991db723d87c"
+  inputs-digest = "a79392f0a6e95c17ef0037cb2188e753eaecd7dff8b3957ae67ec44d4ff0d4e5"
   solver-name = "gps-cdcl"
   solver-version = 1
