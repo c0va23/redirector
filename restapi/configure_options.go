@@ -1,8 +1,9 @@
 package restapi
 
 import (
-	"errors"
+	"net/http"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/swag"
 
 	"github.com/c0va23/redirector/log"
@@ -48,7 +49,7 @@ func buildStore() store.Store {
 	}
 }
 
-var errInvalidBasicCredentials = errors.New("Invalid Basic credentials")
+var errInvalidBasicCredentials = errors.New(http.StatusUnauthorized, "Invalid Basic credentials")
 
 var authLogger = log.NewLeveledLogger("auth")
 
