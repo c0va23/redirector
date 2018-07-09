@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"sort"
+
 	"github.com/go-openapi/runtime/middleware"
 
 	"github.com/c0va23/redirector/models"
@@ -27,6 +29,9 @@ func (c *Controller) ListHostRulesHandler(params config.ListHostRulesParams, _pr
 
 	switch err {
 	case nil:
+		sort.Slice(listHostRules, func(i, j int) bool {
+			return listHostRules[i].Host < listHostRules[j].Host
+		})
 		return config.NewListHostRulesOK().
 			WithPayload(listHostRules)
 	default:
