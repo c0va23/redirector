@@ -10,7 +10,7 @@ import (
 	runtime "github.com/go-openapi/runtime"
 	cors "github.com/rs/cors"
 
-	"github.com/c0va23/redirector/controllers"
+	"github.com/c0va23/redirector/handlers"
 	"github.com/c0va23/redirector/log"
 	"github.com/c0va23/redirector/resolvers"
 	"github.com/c0va23/redirector/restapi/operations"
@@ -25,10 +25,10 @@ var configLogger = log.NewLeveledLogger("config")
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	store := buildStore()
 
-	configHandlers := controllers.NewConfigHandlers(store)
+	configHandlers := handlers.NewConfigHandlers(store)
 
 	resolver := resolvers.MultiHostRulesResolver(resolvers.DefaultResolvers)
-	redirectHandler := controllers.NewRedirectHandler(store, resolver)
+	redirectHandler := handlers.NewRedirectHandler(store, resolver)
 
 	// configure the api here
 	api.ServeError = func(rw http.ResponseWriter, req *http.Request, err error) {

@@ -1,4 +1,4 @@
-package controllers_test
+package handlers_test
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/icrowley/fake"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/c0va23/redirector/controllers"
+	"github.com/c0va23/redirector/handlers"
 	"github.com/c0va23/redirector/models"
 	"github.com/c0va23/redirector/store"
 	"github.com/c0va23/redirector/test/factories"
@@ -19,7 +19,7 @@ import (
 func TestNewRedirectHandler(t *testing.T) {
 	s := new(mocks.StoreMock)
 	r := new(mocks.ResolverMock)
-	h := controllers.NewRedirectHandler(s, r)
+	h := handlers.NewRedirectHandler(s, r)
 
 	assert.Implements(t, (*http.Handler)(nil), h)
 }
@@ -29,7 +29,7 @@ func TestRedirectHandler_Handle_ServerError(t *testing.T) {
 
 	s := new(mocks.StoreMock)
 	r := new(mocks.ResolverMock)
-	h := controllers.NewRedirectHandler(s, r)
+	h := handlers.NewRedirectHandler(s, r)
 
 	err := fmt.Errorf("GetHostRulesErr")
 	host := fake.DomainName()
@@ -53,7 +53,7 @@ func TestRedirectHandler_Handle_NotFound(t *testing.T) {
 
 	s := new(mocks.StoreMock)
 	r := new(mocks.ResolverMock)
-	h := controllers.NewRedirectHandler(s, r)
+	h := handlers.NewRedirectHandler(s, r)
 
 	host := fake.DomainName()
 	s.On("GetHostRules", host).Return(nil, store.ErrNotFound)
@@ -76,7 +76,7 @@ func TestRedirectHandler_Handle_Success(t *testing.T) {
 
 	s := new(mocks.StoreMock)
 	r := new(mocks.ResolverMock)
-	h := controllers.NewRedirectHandler(s, r)
+	h := handlers.NewRedirectHandler(s, r)
 
 	path := factories.GeneratePath()
 	hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
