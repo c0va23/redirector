@@ -1,9 +1,6 @@
 package restapi
 
 import (
-	"net/http"
-
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/swag"
 
 	"github.com/c0va23/redirector/log"
@@ -47,18 +44,4 @@ func buildStore() store.Store {
 		builderLogger.Fatalf("Unknown store type: %s", appOptions.StoreType)
 		return nil
 	}
-}
-
-var errInvalidBasicCredentials = errors.New(http.StatusUnauthorized, "Invalid Basic credentials")
-
-var authLogger = log.NewLeveledLogger("auth")
-
-func basicAuth(userename, password string) (interface{}, error) {
-	if appOptions.BasicUsername != userename || appOptions.BasicPassword != password {
-		authLogger.WithError(errInvalidBasicCredentials).
-			Warnf(`Invalid credential for username "%s"`, userename)
-		return false, errInvalidBasicCredentials
-	}
-
-	return true, nil
 }

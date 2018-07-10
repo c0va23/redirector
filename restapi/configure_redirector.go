@@ -6,11 +6,11 @@ import (
 	"crypto/tls"
 	"net/http"
 
-	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	cors "github.com/rs/cors"
 
 	"github.com/c0va23/redirector/handlers"
+	"github.com/c0va23/redirector/httputils"
 	"github.com/c0va23/redirector/log"
 	"github.com/c0va23/redirector/resolvers"
 	"github.com/c0va23/redirector/restapi/operations"
@@ -21,6 +21,7 @@ import (
 //go:generate swagger generate server --target .. --name  --spec ../api.yml
 
 var configLogger = log.NewLeveledLogger("config")
+var authLogger = log.NewLeveledLogger("auth")
 
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	store := buildStore()
@@ -31,14 +32,10 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	redirectHandler := handlers.NewRedirectHandler(store, resolver)
 
 	// configure the api here
-	api.ServeError = func(rw http.ResponseWriter, req *http.Request, err error) {
-		if apiErr, ok := err.(errors.Error); ok && http.StatusNotFound == apiErr.Code() {
-			redirectHandler.ServeHTTP(rw, req)
-		} else {
-			configLogger.WithError(err).Errorf("ServerError %#v", err)
-			errors.ServeError(rw, req, err)
-		}
-	}
+	api.ServeError = httputils.BuildServerErrorHandler(
+		redirectHandler,
+		configLogger,
+	)
 
 	// Set your custom logger if needed. Default one is log.Printf
 	// Expected interface func(string, ...interface{})
@@ -46,7 +43,11 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	// Example:
 	api.Logger = configLogger.Infof
 
-	api.APISecurityAuth = basicAuth
+	api.APISecurityAuth = httputils.BuildBasicAuth(
+		appOptions.BasicUsername,
+		appOptions.BasicPassword,
+		authLogger,
+	)
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
