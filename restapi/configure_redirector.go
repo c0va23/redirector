@@ -25,7 +25,7 @@ var configLogger = log.NewLeveledLogger("config")
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	store := buildStore()
 
-	controller := controllers.NewController(store)
+	configHandlers := controllers.NewConfigHandlers(store)
 
 	resolver := resolvers.MultiHostRulesResolver(resolvers.DefaultResolvers)
 	redirectHandler := controllers.NewRedirectHandler(store, resolver)
@@ -52,12 +52,12 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.ConfigListHostRulesHandler = config.ListHostRulesHandlerFunc(controller.ListHostRulesHandler)
-	api.ConfigCreateHostRulesHandler = config.CreateHostRulesHandlerFunc(controller.CreateHostRulesHandler)
-	api.ConfigUpdateHostRulesHandler = config.UpdateHostRulesHandlerFunc(controller.UpdateHostRulesHandler)
-	api.ConfigGetHostRuleHandler = config.GetHostRuleHandlerFunc(controller.GetHostRulesHandler)
-	api.ConfigDeleteHostRulesHandler = config.DeleteHostRulesHandlerFunc(controller.DeleteHostRulesHandler)
-	api.RedirectHealthcheckHandler = redirect.HealthcheckHandlerFunc(controller.HealthCheckHandler)
+	api.ConfigListHostRulesHandler = config.ListHostRulesHandlerFunc(configHandlers.ListHostRulesHandler)
+	api.ConfigCreateHostRulesHandler = config.CreateHostRulesHandlerFunc(configHandlers.CreateHostRulesHandler)
+	api.ConfigUpdateHostRulesHandler = config.UpdateHostRulesHandlerFunc(configHandlers.UpdateHostRulesHandler)
+	api.ConfigGetHostRuleHandler = config.GetHostRuleHandlerFunc(configHandlers.GetHostRulesHandler)
+	api.ConfigDeleteHostRulesHandler = config.DeleteHostRulesHandlerFunc(configHandlers.DeleteHostRulesHandler)
+	api.RedirectHealthcheckHandler = redirect.HealthcheckHandlerFunc(configHandlers.HealthCheckHandler)
 
 	api.ServerShutdown = func() {}
 

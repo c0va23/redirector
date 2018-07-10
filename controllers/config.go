@@ -11,21 +11,24 @@ import (
 	"github.com/c0va23/redirector/store"
 )
 
-// Controller implement methods into restapi
-type Controller struct {
+// ConfigHandlers implement methods into restapi
+type ConfigHandlers struct {
 	store store.Store
 }
 
-// NewController initialize new controller
-func NewController(store store.Store) Controller {
-	return Controller{
+// NewConfigHandlers initialize new controller
+func NewConfigHandlers(store store.Store) ConfigHandlers {
+	return ConfigHandlers{
 		store: store,
 	}
 }
 
 // ListHostRulesHandler is handler for ListHostRules
-func (c *Controller) ListHostRulesHandler(params config.ListHostRulesParams, _principal interface{}) middleware.Responder {
-	listHostRules, err := c.store.ListHostRules()
+func (configHandler *ConfigHandlers) ListHostRulesHandler(
+	params config.ListHostRulesParams,
+	_principal interface{},
+) middleware.Responder {
+	listHostRules, err := configHandler.store.ListHostRules()
 
 	switch err {
 	case nil:
@@ -42,11 +45,11 @@ func (c *Controller) ListHostRulesHandler(params config.ListHostRulesParams, _pr
 }
 
 // CreateHostRulesHandler is handler for CreateHostRules
-func (c *Controller) CreateHostRulesHandler(
+func (configHandler *ConfigHandlers) CreateHostRulesHandler(
 	params config.CreateHostRulesParams,
 	_principal interface{},
 ) middleware.Responder {
-	err := c.store.CreateHostRules(params.HostRules)
+	err := configHandler.store.CreateHostRules(params.HostRules)
 
 	switch err {
 	case nil:
@@ -66,11 +69,11 @@ func (c *Controller) CreateHostRulesHandler(
 }
 
 // UpdateHostRulesHandler is handler for UpdateHostRules
-func (c *Controller) UpdateHostRulesHandler(
+func (configHandler *ConfigHandlers) UpdateHostRulesHandler(
 	params config.UpdateHostRulesParams,
 	_principal interface{},
 ) middleware.Responder {
-	err := c.store.UpdateHostRules(params.Host, params.HostRules)
+	err := configHandler.store.UpdateHostRules(params.Host, params.HostRules)
 
 	switch err {
 	case nil:
@@ -89,11 +92,11 @@ func (c *Controller) UpdateHostRulesHandler(
 }
 
 // GetHostRulesHandler is handler for GetHostRules
-func (c *Controller) GetHostRulesHandler(
+func (configHandler *ConfigHandlers) GetHostRulesHandler(
 	params config.GetHostRuleParams,
 	_principal interface{},
 ) middleware.Responder {
-	hostRules, err := c.store.GetHostRules(params.Host)
+	hostRules, err := configHandler.store.GetHostRules(params.Host)
 
 	switch err {
 	case nil:
@@ -108,11 +111,11 @@ func (c *Controller) GetHostRulesHandler(
 }
 
 // DeleteHostRulesHandler is handler for DeleteHostRules
-func (c *Controller) DeleteHostRulesHandler(
+func (configHandler *ConfigHandlers) DeleteHostRulesHandler(
 	params config.DeleteHostRulesParams,
 	_principal interface{},
 ) middleware.Responder {
-	err := c.store.DeleteHostRules(params.Host)
+	err := configHandler.store.DeleteHostRules(params.Host)
 	switch err {
 	case nil:
 		return config.NewDeleteHostRulesNoContent()
@@ -129,8 +132,10 @@ func (c *Controller) DeleteHostRulesHandler(
 }
 
 // HealthCheckHandler is handler for HealthCheck
-func (c *Controller) HealthCheckHandler(params redirect.HealthcheckParams) middleware.Responder {
-	err := c.store.CheckHealth()
+func (configHandler *ConfigHandlers) HealthCheckHandler(
+	params redirect.HealthcheckParams,
+) middleware.Responder {
+	err := configHandler.store.CheckHealth()
 
 	switch err {
 	case nil:
