@@ -25,14 +25,23 @@ func TestListHostRulesHandler_Success(t *testing.T) {
 
 	listHostRules := make([]models.HostRules, 0, 3)
 	for i := 0; i < cap(listHostRules); i++ {
-		hostRules := factories.HostRulesFactory.MustCreate().(models.HostRules)
+		hostRules := factories.
+			HostRulesFactory.
+			MustCreateWithOption(map[string]interface{}{
+				"Host": fmt.Sprintf("host%d.org", cap(listHostRules)-i),
+			}).(models.HostRules)
 		listHostRules = append(listHostRules, hostRules)
 	}
 	s.On("ListHostRules").Return(listHostRules, nil)
 
+	revertHostRules := make([]models.HostRules, 0, 3)
+	for i := len(listHostRules) - 1; i >= 0; i-- {
+		revertHostRules = append(revertHostRules, listHostRules[i])
+	}
+
 	a.Equal(
 		c.ListHostRulesHandler(config.ListHostRulesParams{}, true),
-		config.NewListHostRulesOK().WithPayload(listHostRules),
+		config.NewListHostRulesOK().WithPayload(revertHostRules),
 	)
 
 	s.AssertExpectations(t)
