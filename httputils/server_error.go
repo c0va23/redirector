@@ -25,3 +25,26 @@ func BuildServerErrorHandler(
 		}
 	}
 }
+
+// ErrInvalidBasicCredentials is error when user pass invalid username or password
+var ErrInvalidBasicCredentials = errors.New(
+	http.StatusUnauthorized,
+	"Invalid Basic credentials",
+)
+
+// BuildBasicAuth build basicAuth checker
+func BuildBasicAuth(
+	expectedUsername string,
+	expectedPassword string,
+	logger *logrus.Logger,
+) func(username, password string) (interface{}, error) {
+	return func(userename, password string) (interface{}, error) {
+		if expectedUsername != userename || expectedPassword != password {
+			logger.WithError(ErrInvalidBasicCredentials).
+				Warnf(`Invalid credential for username "%s"`, userename)
+			return false, ErrInvalidBasicCredentials
+		}
+
+		return true, nil
+	}
+}

@@ -21,6 +21,7 @@ import (
 //go:generate swagger generate server --target .. --name  --spec ../api.yml
 
 var configLogger = log.NewLeveledLogger("config")
+var authLogger = log.NewLeveledLogger("auth")
 
 func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	store := buildStore()
@@ -42,7 +43,11 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	// Example:
 	api.Logger = configLogger.Infof
 
-	api.APISecurityAuth = basicAuth
+	api.APISecurityAuth = httputils.BuildBasicAuth(
+		appOptions.BasicUsername,
+		appOptions.BasicPassword,
+		authLogger,
+	)
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
