@@ -384,7 +384,7 @@ func TestHealthCheckHandler_Error(t *testing.T) {
 
 	ch := controllers.NewConfigHandlers(s)
 
-	err := fmt.Errorf("CheckHealtError")
+	err := fmt.Errorf("CheckHealthError")
 	s.On("CheckHealth").Return(err)
 
 	a.Equal(
