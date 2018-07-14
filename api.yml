@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: Redirector configure API
-  version: "1.0.0"
+  version: "0.5.0"
   title: "Redirector API"
   contact:
     email: "c0va23@gmail.com"
