@@ -27,6 +27,17 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:a8c2810722070f5eda433d0977645d2539688097ed3627a79e142950367cf49d"
+  name = "github.com/blang/vfs"
+  packages = [
+    ".",
+    "memfs",
+  ]
+  pruneopts = "UT"
+  revision = "c14afcac17253ce7418da751ec6b1988790cdc8f"
+
+[[projects]]
+  branch = "master"
   digest = "1:fb48759afd700f7aca51701bbae6bea04353e9b44d496c47345c4408708332d2"
   name = "github.com/bluele/factory-go"
   packages = ["factory"]
@@ -40,6 +51,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "2b8494104d86337cdd41d0a49cbed8e4583c0ab4"
+
+[[projects]]
+  branch = "master"
+  digest = "1:5fd5c4d4282935b7a575299494f2c09e9d2cacded7815c83aff7c1602aff3154"
+  name = "github.com/daaku/go.zipexe"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "a5fe2436ffcb3236e175e5149162b41cd28bd27d"
 
 [[projects]]
   digest = "1:a2c1d0e43bd3baaa071d1b9ed72c27d78169b2b269f71c105ac4ba34b1be4a39"
@@ -164,6 +183,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:caf6db28595425c0e0f2301a00257d11712f65c1878e12cffc42f6b9a9cf3f23"
+  name = "github.com/kardianos/osext"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ae77be60afb1dcacde03767a8c37337fad28ac14"
+
+[[projects]]
+  branch = "master"
   digest = "1:7a259d4e4da6adc969dc948121ddce023eae8e38ca152ea97ea51123dc8ac0d4"
   name = "github.com/mailru/easyjson"
   packages = [
@@ -194,6 +221,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "bb74f1db0675b241733089d5a1faa5dd8b0ef57b"
+
+[[projects]]
+  branch = "master"
+  digest = "1:a26c2956a6a2ed906d75d8f049b6ba929031da3f44a154ea1d921d4c6d03b0bf"
+  name = "github.com/phogolabs/parcello"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "bae01a3ceb4170daf3403d471ed6a30b5d0dcebc"
 
 [[projects]]
   digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
@@ -332,6 +367,7 @@
     "github.com/mediocregopher/radix.v2/pool",
     "github.com/mediocregopher/radix.v2/redis",
     "github.com/mediocregopher/radix.v2/util",
+    "github.com/phogolabs/parcello",
     "github.com/rs/cors",
     "github.com/sirupsen/logrus",
     "github.com/stretchr/testify/assert",
