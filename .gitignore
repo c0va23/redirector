@@ -4,3 +4,4 @@ restapi/*
 !restapi/configure_*
 vendor/
 bin/
+locales/resource.go

@@ -5,6 +5,7 @@ before_install:
 - make dev-deps
 - make deps
 - make gen-swagger
+- make gen-locales
 script:
 - make lint
 - make run-test

@@ -8,6 +8,7 @@ dev-deps:
 	go get -u golang.org/x/lint/golint
 	go get -u github.com/kisielk/errcheck
 	go get -u honnef.co/go/tools/cmd/staticcheck
+	go get -u github.com/phogolabs/parcello/cmd/parcello
 
 deps:
 	dep ensure -vendor-only
@@ -24,6 +25,9 @@ lint:
 
 run-test:
 	go test -cover ./...
+
+gen-locales:
+	go generate ./locales/build.go
 
 bin/:
 	mkdir bin/
