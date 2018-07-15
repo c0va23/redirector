@@ -143,6 +143,19 @@ paths:
         500:
           $ref: '#/responses/InternalServerError'
 
+  /locales.json:
+    get:
+      summary: Locales dictionary
+      operationId: locales
+      tags:
+      - config
+      responses:
+        200:
+          description: |
+            Always return locales dictionary.
+          schema:
+            $ref: '#/definitions/Locales'
+
   /_healthcheck:
     get:
       summary: Check service status
@@ -279,3 +292,35 @@ definitions:
     properties:
       message:
         type: string
+
+  Translation:
+    type: object
+    x-nullable: false
+    properties:
+      key:
+        type: string
+        description: |
+          Inner translation key.
+      message:
+        type: string
+        description: |
+          Translated message.
+
+  LocaleTranslations:
+    type: object
+    x-nullable: false
+    properties:
+      code:
+        type: string
+        description: |
+          Locale code of [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1).
+
+      translations:
+        type: array
+        items:
+          $ref: '#/definitions/Translation'
+
+  Locales:
+    type: array
+    items:
+      $ref: '#/definitions/LocaleTranslations'
