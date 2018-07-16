@@ -10,8 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const defaultLocale = "en"
-
 func TestBuildLocales_NotEmpty(t *testing.T) {
 	a := assert.New(t)
 
@@ -32,7 +30,7 @@ func TestBuildLocales_DefaultLocale(t *testing.T) {
 
 	haveDefaultLocale := false
 	for _, localeTranslations := range translations {
-		if defaultLocale == localeTranslations.Code {
+		if localeTranslations.Default {
 			haveDefaultLocale = true
 			break
 		}
@@ -41,7 +39,7 @@ func TestBuildLocales_DefaultLocale(t *testing.T) {
 	a.True(
 		haveDefaultLocale,
 		`Translations must contain "%s" locale`,
-		defaultLocale,
+		locales.DefaultLocale,
 	)
 }
 
@@ -62,7 +60,7 @@ func defaultLocaleTranslations() models.LocaleTranslations {
 	}
 
 	for _, localeTranslations := range translations {
-		if defaultLocale == localeTranslations.Code {
+		if localeTranslations.Default {
 			return localeTranslations
 		}
 	}

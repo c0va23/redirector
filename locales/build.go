@@ -21,6 +21,9 @@ type group string
 type key string
 type localeFileStruct map[group]map[key]string
 
+// DefaultLocale used for mark default locale
+const DefaultLocale = "en"
+
 func buildLocaleTranslations(
 	translationMap localeFileStruct,
 	localeCode string,
@@ -39,6 +42,7 @@ func buildLocaleTranslations(
 	return models.LocaleTranslations{
 		Code:         localeCode,
 		Translations: translations,
+		Default:      DefaultLocale == localeCode,
 	}
 }
 

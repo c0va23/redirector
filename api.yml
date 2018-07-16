@@ -320,6 +320,13 @@ definitions:
         items:
           $ref: '#/definitions/Translation'
 
+      default:
+        type: boolean
+        default: false
+        x-nullable: false
+        description: |
+          By default fales. Only on default locale is true.
+
   Locales:
     type: array
     items:
