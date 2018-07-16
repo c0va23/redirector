@@ -11,6 +11,7 @@ import (
 
 	"github.com/c0va23/redirector/handlers"
 	"github.com/c0va23/redirector/httputils"
+	"github.com/c0va23/redirector/locales"
 	"github.com/c0va23/redirector/log"
 	"github.com/c0va23/redirector/resolvers"
 	"github.com/c0va23/redirector/restapi/operations"
@@ -30,6 +31,11 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 
 	resolver := resolvers.MultiHostRulesResolver(resolvers.DefaultResolvers)
 	redirectHandler := handlers.NewRedirectHandler(store, resolver)
+
+	localeList, localesErr := locales.BuildLocales()
+	if nil != localesErr {
+		configLogger.Fatal(localesErr)
+	}
 
 	// configure the api here
 	api.ServeError = httputils.BuildServerErrorHandler(
@@ -58,6 +64,7 @@ func configureAPI(api *operations.RedirectorAPI) http.Handler {
 	api.ConfigUpdateHostRulesHandler = config.UpdateHostRulesHandlerFunc(configHandlers.UpdateHostRulesHandler)
 	api.ConfigGetHostRuleHandler = config.GetHostRuleHandlerFunc(configHandlers.GetHostRulesHandler)
 	api.ConfigDeleteHostRulesHandler = config.DeleteHostRulesHandlerFunc(configHandlers.DeleteHostRulesHandler)
+	api.ConfigLocalesHandler = handlers.LocalesHandler(localeList)
 	api.RedirectHealthcheckHandler = redirect.HealthcheckHandlerFunc(configHandlers.HealthCheckHandler)
 
 	api.ServerShutdown = func() {}
