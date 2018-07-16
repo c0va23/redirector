@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: Redirector configure API
-  version: "0.5.0"
+  version: "0.6.0"
   title: "Redirector API"
   contact:
     email: "c0va23@gmail.com"
@@ -63,7 +63,7 @@ paths:
         400: { $ref: '#/responses/InvalidJSON' }
         409:
           description: Host rules already exists
-        422: { $ref: '#/responses/InvalidData' }
+        422: { $ref: '#/responses/ValidationError' }
         500:
           $ref: '#/responses/InternalServerError'
 
@@ -120,7 +120,7 @@ paths:
             $ref: '#/definitions/HostRules'
         400: { $ref: '#/responses/InvalidJSON' }
         404: { $ref: '#/responses/NotFound' }
-        422: { $ref: '#/responses/InvalidData' }
+        422: { $ref: '#/responses/ValidationError' }
         500:
           $ref: '#/responses/InternalServerError'
 
@@ -178,8 +178,10 @@ responses:
       $ref: '#/definitions/ServerError'
   NotFound:
     description: Not found
-  InvalidData:
-    description: Invalid data
+  ValidationError:
+    description: Validation error
+    schema:
+      $ref: '#/definitions/ModelValidationError'
   InvalidJSON:
     description: Invalid JSON
 
@@ -325,9 +327,36 @@ definitions:
         default: false
         x-nullable: false
         description: |
-          By default fales. Only on default locale is true.
+          By default false. Only on default locale is true.
 
   Locales:
     type: array
     items:
       $ref: '#/definitions/LocaleTranslations'
+
+  ValidationError:
+    type: object
+    x-nullable: false
+    properties:
+      translationKey:
+        description:
+          Inner translation key. On front should be mapped with error tranlation
+          dictionary.
+        type: string
+
+  FieldValidationError:
+    type: object
+    x-nullable: false
+    properties:
+      name:
+        description: Field name.
+        type: string
+      errors:
+        type: array
+        items:
+          $ref: '#/definitions/ValidationError'
+
+  ModelValidationError:
+    type: array
+    items:
+      $ref: '#/definitions/FieldValidationError'
