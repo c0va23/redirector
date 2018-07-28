@@ -10,6 +10,7 @@ import (
 	"github.com/c0va23/redirector/models"
 	"github.com/c0va23/redirector/restapi/operations/config"
 	"github.com/c0va23/redirector/restapi/operations/redirect"
+	"github.com/c0va23/redirector/validators"
 
 	"github.com/c0va23/redirector/store"
 	"github.com/c0va23/redirector/test/factories"
@@ -204,6 +205,32 @@ func TestUpdateHostRules_OtherError(t *testing.T) {
 			WithPayload(&models.ServerError{
 				Message: err.Error(),
 			}),
+		ch.UpdateHostRulesHandler(
+			config.UpdateHostRulesParams{
+				Host:      host,
+				HostRules: hostRules,
+			},
+			true,
+		),
+	)
+
+	s.AssertExpectations(t)
+}
+
+func TestUpdateHostRules_ValidationError(t *testing.T) {
+	a := assert.New(t)
+
+	s := new(mocks.StoreMock)
+	ch := handlers.NewConfigHandlers(s)
+
+	host := fake.DomainName()
+	hostRules := models.HostRules{}
+
+	hostRulesError, _ := validators.ValidateHostRules(hostRules)
+
+	a.Equal(
+		config.NewUpdateHostRulesUnprocessableEntity().
+			WithPayload(hostRulesError),
 		ch.UpdateHostRulesHandler(
 			config.UpdateHostRulesParams{
 				Host:      host,
