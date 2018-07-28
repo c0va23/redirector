@@ -1,2 +1,10 @@
 [errors]
 required = 'Field required'
+
+"target.httpCode.outOfRange" = "The value must be between 300 and 399, inclusive"
+
+"rule.resolver.unknown" = "Valid values: simple и pattern"
+"rule.sourcePath.invalidPattern" = "Invalid regular expression"
+
+"target.path.missedPlaceholder" = "Missing placeholder"
+"target.path.invalidPlaceholderIndex" = "Invalid placeholder Index"

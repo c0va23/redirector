@@ -1,2 +1,10 @@
 [errors]
 required = 'Поле обязательное'
+
+"target.httpCode.outOfRange" = "Значение должно быть между 300 и 399 включительно"
+
+"rule.resolver.unknown" = "Допустимые значения: simple и pattern"
+"rule.sourcePath.invalidPattern" = "Некорректное регулярное выражение"
+
+"target.path.missedPlaceholder" = "Отсутствует местозаполнитель"
+"target.path.invalidPlaceholderIndex" = "Недействительный индекс"
