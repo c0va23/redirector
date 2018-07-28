@@ -137,6 +137,30 @@ func TestCreateHostRulesHandler_OtherError(t *testing.T) {
 	s.AssertExpectations(t)
 }
 
+func TestCreateHostRulesHandler_ValidationError(t *testing.T) {
+	a := assert.New(t)
+
+	s := new(mocks.StoreMock)
+	ch := handlers.NewConfigHandlers(s)
+
+	newHostRules := models.HostRules{}
+	hostRulesError, _ := validators.ValidateHostRules(newHostRules)
+
+	a.Equal(
+		config.
+			NewCreateHostRulesUnprocessableEntity().
+			WithPayload(hostRulesError),
+		ch.CreateHostRulesHandler(
+			config.CreateHostRulesParams{
+				HostRules: newHostRules,
+			},
+			true,
+		),
+	)
+
+	s.AssertExpectations(t)
+}
+
 func TestUpdateHostRules_Success(t *testing.T) {
 	a := assert.New(t)
 

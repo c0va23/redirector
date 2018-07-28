@@ -50,6 +50,10 @@ func (configHandler *ConfigHandlers) CreateHostRulesHandler(
 	params config.CreateHostRulesParams,
 	_principal interface{},
 ) middleware.Responder {
+	if hostRulesError, valid := validators.ValidateHostRules(params.HostRules); !valid {
+		return config.NewCreateHostRulesUnprocessableEntity().WithPayload(hostRulesError)
+	}
+
 	err := configHandler.store.CreateHostRules(params.HostRules)
 
 	switch err {
