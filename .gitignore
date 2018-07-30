@@ -1,7 +1,10 @@
 cmd/redirector-server/
-models/
+models/*
 restapi/*
 !restapi/configure_*
 vendor/
 bin/
 locales/resource.go
+!models/host_rules.go
+!models/rule.go
+!models/target.go
