@@ -343,6 +343,8 @@ definitions:
           Inner translation key. On front should be mapped with error tranlation
           dictionary.
         type: string
+    required:
+    - translationKey
 
   FieldValidationError:
     type: object
@@ -355,6 +357,9 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/ValidationError'
+    required:
+    - name
+    - errors
 
   ModelValidationError:
     type: array
