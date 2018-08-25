@@ -14,10 +14,14 @@ import (
 type Target struct {
 
 	// http code
-	HTTPCode int32 `json:"httpCode,omitempty"`
+	// Required: true
+	// Maximum: 399
+	// Minimum: 300
+	HTTPCode int32 `json:"httpCode"`
 
 	// path
-	Path string `json:"path,omitempty"`
+	// Required: true
+	Path string `json:"path"`
 }
 
 // Validate validates this target

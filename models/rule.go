@@ -22,14 +22,17 @@ type Rule struct {
 	ActiveTo *strfmt.DateTime `json:"activeTo,omitempty"`
 
 	// Rule resolver
+	// Required: true
 	// Enum: [simple pattern]
-	Resolver string `json:"resolver,omitempty"`
+	Resolver string `json:"resolver"`
 
 	// Regex for match source path
-	SourcePath string `json:"sourcePath,omitempty"`
+	// Required: true
+	SourcePath string `json:"sourcePath"`
 
 	// target
-	Target Target `json:"target,omitempty"`
+	// Required: true
+	Target Target `json:"target"`
 }
 
 // Validate validates this rule

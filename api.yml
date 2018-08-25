@@ -339,6 +339,7 @@ definitions:
     x-nullable: false
     properties:
       translationKey:
+        x-nullable: false
         description:
           Inner translation key. On front should be mapped with error tranlation
           dictionary.
@@ -353,6 +354,7 @@ definitions:
       name:
         description: Field name.
         type: string
+        x-nullable: false
       errors:
         type: array
         items:

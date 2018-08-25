@@ -14,12 +14,15 @@ import (
 type HostRules struct {
 
 	// default target
-	DefaultTarget Target `json:"defaultTarget,omitempty"`
+	// Required: true
+	DefaultTarget Target `json:"defaultTarget"`
 
 	// host
-	Host string `json:"host,omitempty"`
+	// Required: true
+	Host string `json:"host"`
 
 	// rules
+	// Required: true
 	Rules []Rule `json:"rules"`
 }
 
