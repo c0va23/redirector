@@ -301,12 +301,18 @@ definitions:
     properties:
       key:
         type: string
+        x-nullable: false
         description: |
           Inner translation key.
       message:
         type: string
+        x-nullable: false
         description: |
           Translated message.
+
+    required:
+    - key
+    - message
 
   LocaleTranslations:
     type: object
@@ -314,11 +320,13 @@ definitions:
     properties:
       code:
         type: string
+        x-nullable: false
         description: |
           Locale code of [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1).
 
       translations:
         type: array
+        x-nullable: false
         items:
           $ref: '#/definitions/Translation'
 
@@ -328,6 +336,11 @@ definitions:
         x-nullable: false
         description: |
           By default false. Only on default locale is true.
+
+    required:
+    - code
+    - translations
+    - default
 
   Locales:
     type: array
