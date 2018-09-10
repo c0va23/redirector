@@ -43,7 +43,7 @@ func TestHostRulesValidate_EmptyHost(t *testing.T) {
 			models.FieldValidationError{
 				Name: "host",
 				Errors: []models.ValidationError{
-					{TranslationKey: "required"},
+					{TranslationKey: "errors.required"},
 				},
 			},
 		},
@@ -75,7 +75,7 @@ func TestHostRulesValidate_InvalidDefaultTarget(t *testing.T) {
 			models.FieldValidationError{
 				Name: "defaultTarget.path",
 				Errors: []models.ValidationError{
-					{TranslationKey: "required"},
+					{TranslationKey: "errors.required"},
 				},
 			},
 		},
@@ -109,7 +109,7 @@ func TestHostRulesValidate_InvalidRule(t *testing.T) {
 			models.FieldValidationError{
 				Name: "rules.0.resolver",
 				Errors: []models.ValidationError{
-					{TranslationKey: "rule.resolver.unknown"},
+					{TranslationKey: "errors.rule.resolver.unknown"},
 				},
 			},
 		},

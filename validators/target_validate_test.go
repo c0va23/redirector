@@ -28,7 +28,7 @@ func TestValidateTarget_EmptyPath(t *testing.T) {
 			{
 				Name: "path",
 				Errors: []models.ValidationError{
-					{TranslationKey: "required"},
+					{TranslationKey: "errors.required"},
 				},
 			},
 		},
@@ -54,7 +54,7 @@ func TestValidateTarget_HTTCodeTooLow(t *testing.T) {
 			{
 				Name: "httpCode",
 				Errors: []models.ValidationError{
-					{TranslationKey: "target.httpCode.outOfRange"},
+					{TranslationKey: "errors.target.httpCode.outOfRange"},
 				},
 			},
 		},
@@ -80,7 +80,7 @@ func TestValidateTarget_HTTCodeTooMuch(t *testing.T) {
 			{
 				Name: "httpCode",
 				Errors: []models.ValidationError{
-					{TranslationKey: "target.httpCode.outOfRange"},
+					{TranslationKey: "errors.target.httpCode.outOfRange"},
 				},
 			},
 		},

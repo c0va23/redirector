@@ -20,25 +20,25 @@ func TestValidateRule_EmptyRule(t *testing.T) {
 			{
 				Name: "resolver",
 				Errors: []models.ValidationError{
-					{TranslationKey: "rule.resolver.unknown"},
+					{TranslationKey: "errors.rule.resolver.unknown"},
 				},
 			},
 			{
 				Name: "sourcePath",
 				Errors: []models.ValidationError{
-					{TranslationKey: "required"},
+					{TranslationKey: "errors.required"},
 				},
 			},
 			{
 				Name: "target.httpCode",
 				Errors: []models.ValidationError{
-					{TranslationKey: "target.httpCode.outOfRange"},
+					{TranslationKey: "errors.target.httpCode.outOfRange"},
 				},
 			},
 			{
 				Name: "target.path",
 				Errors: []models.ValidationError{
-					{TranslationKey: "required"},
+					{TranslationKey: "errors.required"},
 				},
 			},
 		},
@@ -133,7 +133,7 @@ func TestValidateRule_ValidPatternWithoutPlaceholder(t *testing.T) {
 			{
 				Name: "target.path",
 				Errors: []models.ValidationError{
-					{TranslationKey: "target.path.missedPlaceholder"},
+					{TranslationKey: "errors.target.path.missedPlaceholder"},
 				},
 			},
 		},
@@ -164,7 +164,7 @@ func TestValidateRule_ValidPatternWithInvalidPlaceholder(t *testing.T) {
 			{
 				Name: "target.path",
 				Errors: []models.ValidationError{
-					{TranslationKey: "target.path.invalidPlaceholderIndex"},
+					{TranslationKey: "errors.target.path.invalidPlaceholderIndex"},
 				},
 			},
 		},
@@ -188,7 +188,7 @@ func TestValidateRule_InvalidPattern(t *testing.T) {
 			models.FieldValidationError{
 				Name: "sourcePath",
 				Errors: []models.ValidationError{
-					{TranslationKey: "rule.sourcePath.invalidPattern"},
+					{TranslationKey: "errors.rule.sourcePath.invalidPattern"},
 				},
 			},
 		},

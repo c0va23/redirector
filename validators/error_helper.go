@@ -4,6 +4,8 @@ import (
 	"github.com/c0va23/redirector/models"
 )
 
+const errorsPrefix = "errors."
+
 func addFieldError(
 	modelError models.ModelValidationError,
 	fieldName string,
@@ -14,7 +16,7 @@ func addFieldError(
 			fieldError.Errors = append(
 				fieldError.Errors,
 				models.ValidationError{
-					TranslationKey: translationKey,
+					TranslationKey: errorsPrefix + translationKey,
 				},
 			)
 			return modelError
@@ -26,7 +28,7 @@ func addFieldError(
 		models.FieldValidationError{
 			Name: fieldName,
 			Errors: []models.ValidationError{
-				{TranslationKey: translationKey},
+				{TranslationKey: errorsPrefix + translationKey},
 			},
 		},
 	)
