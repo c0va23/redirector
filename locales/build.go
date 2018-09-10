@@ -40,9 +40,9 @@ func buildLocaleTranslations(
 	}
 
 	return models.LocaleTranslations{
-		Code:         localeCode,
-		Translations: translations,
-		Default:      DefaultLocale == localeCode,
+		Code:          localeCode,
+		Translations:  translations,
+		DefaultLocale: DefaultLocale == localeCode,
 	}
 }
 

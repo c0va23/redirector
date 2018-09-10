@@ -330,7 +330,7 @@ definitions:
         items:
           $ref: '#/definitions/Translation'
 
-      default:
+      defaultLocale:
         type: boolean
         default: false
         x-nullable: false
@@ -340,7 +340,7 @@ definitions:
     required:
     - code
     - translations
-    - default
+    - defaultLocale
 
   Locales:
     type: array
