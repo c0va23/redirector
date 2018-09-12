@@ -8,6 +8,7 @@ WORKDIR ${SRC_PATH}
 RUN apk add --update \
     make \
     git \
+    curl \
     || true
 
 ADD Makefile ${SRC_PATH}
