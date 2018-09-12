@@ -3,6 +3,8 @@ package validators_test
 import (
 	"testing"
 
+	"github.com/go-openapi/strfmt"
+
 	"github.com/stretchr/testify/assert"
 
 	"github.com/c0va23/redirector/models"
@@ -189,6 +191,33 @@ func TestValidateRule_InvalidPattern(t *testing.T) {
 				Name: "sourcePath",
 				Errors: []models.ValidationError{
 					{TranslationKey: "errors.rule.sourcePath.invalidPattern"},
+				},
+			},
+		},
+		ruleError,
+	)
+}
+
+func TestValidateRule_InvalidActive(t *testing.T) {
+	a := assert.New(t)
+
+	activeFrom, _ := strfmt.ParseDateTime("2018-01-01T00:00:00.000Z")
+	activeTo, _ := strfmt.ParseDateTime("2017-12-31T23:59:59.99Z")
+
+	rule, _ := factories.RuleFactory.MustCreateWithOption(map[string]interface{}{
+		"ActiveFrom": &activeFrom,
+		"ActiveTo":   &activeTo,
+	}).(models.Rule)
+
+	ruleError, valid := validators.ValidateRule(rule)
+
+	a.False(valid)
+	a.Equal(
+		models.ModelValidationError{
+			models.FieldValidationError{
+				Name: "activeTo",
+				Errors: []models.ValidationError{
+					{TranslationKey: "errors.rule.activeTo.tooLate"},
 				},
 			},
 		},

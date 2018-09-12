@@ -8,6 +8,7 @@ required = 'Field required'
 
 "rule.resolver.unknown" = "Valid values: simple и pattern"
 "rule.sourcePath.invalidPattern" = "Invalid regular expression"
+"rule.activeTo.tooLate" = "Too late"
 
 "target.path.missedPlaceholder" = "Missing placeholder"
 "target.path.invalidPlaceholderIndex" = "Invalid placeholder Index"

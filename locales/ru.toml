@@ -8,6 +8,7 @@ required = 'Поле обязательное'
 
 "rule.resolver.unknown" = "Допустимые значения: simple и pattern"
 "rule.sourcePath.invalidPattern" = "Некорректное регулярное выражение"
+"rule.activeTo.tooLate" = "Слишком поздно"
 
 "target.path.missedPlaceholder" = "Отсутствует местозаполнитель"
 "target.path.invalidPlaceholderIndex" = "Недействительный индекс"

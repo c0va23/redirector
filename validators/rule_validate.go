@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
+	"time"
 
 	"github.com/c0va23/redirector/models"
 	"github.com/c0va23/redirector/resolvers"
@@ -32,6 +33,8 @@ func ValidateRule(rule models.Rule) (
 		modelError = addEmbedError(modelError, "target", targetError)
 	}
 
+	modelError = validateActive(modelError, (*time.Time)(rule.ActiveFrom), (*time.Time)(rule.ActiveTo))
+
 	valid = isEmptyModelError(modelError)
 	return
 }
@@ -55,6 +58,18 @@ func validatePattern(
 		if placeholder != fmt.Sprintf("{%d}", index) {
 			return addFieldError(modelError, "target.path", "target.path.invalidPlaceholderIndex")
 		}
+	}
+
+	return modelError
+}
+
+func validateActive(
+	modelError models.ModelValidationError,
+	activeFrom *time.Time,
+	activeTo *time.Time,
+) models.ModelValidationError {
+	if nil != activeFrom && nil != activeTo && activeTo.Before(*activeFrom) {
+		return addFieldError(modelError, "activeTo", "rule.activeTo.tooLate")
 	}
 
 	return modelError
