@@ -1,8 +1,9 @@
 PACKAGE := github.com/c0va23/redirector
 ERRCHECK_EXCLUDE_PATTERN := '(cmd/redirector-server|restapi/operations)'
+GOSWAGGER_VERSION := 0.15.0
+BUILD_ARCH := amd64
 
 dev-deps:
-	go get -u github.com/go-swagger/go-swagger/cmd/swagger
 	go get -u github.com/golang/dep/cmd/dep
 	go get -u golang.org/x/tools/cmd/goimports
 	go get -u golang.org/x/lint/golint
@@ -13,8 +14,8 @@ dev-deps:
 deps:
 	dep ensure -vendor-only
 
-gen-swagger:
-	swagger generate server -f api.yml
+gen-swagger: bin/swagger
+	bin/swagger generate server -f api.yml
 
 lint:
 	go vet ./...
@@ -31,6 +32,10 @@ gen-locales:
 
 bin/:
 	mkdir bin/
+
+bin/swagger: bin/
+	curl -o bin/swagger -L https://github.com/go-swagger/go-swagger/releases/download/$(GOSWAGGER_VERSION)/swagger_linux_$(BUILD_ARCH)
+	chmod +x bin/swagger
 
 bin/redirector-server-linux-amd64: bin/
 	GOOS=linux \
