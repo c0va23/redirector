@@ -1,6 +1,9 @@
 [errors]
 required = 'Field required'
 
+"hostRules.host.tooLong" = "The host has to be shorter than 255 symbols"
+"hostRules.host.invalidPattern" = "Not valid host"
+
 "target.httpCode.outOfRange" = "The value must be between 300 and 399, inclusive"
 
 "rule.resolver.unknown" = "Valid values: simple и pattern"

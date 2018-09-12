@@ -51,6 +51,64 @@ func TestHostRulesValidate_EmptyHost(t *testing.T) {
 	)
 }
 
+func TestHostRulesValidate_TooLongHost(t *testing.T) {
+	a := assert.New(t)
+
+	longHost := ""
+
+	for i := 0; i <= 256; i++ {
+		longHost = longHost + "a"
+	}
+
+	hostRules := factories.
+		HostRulesFactory.
+		MustCreateWithOption(map[string]interface{}{
+			"Host": longHost,
+		}).(models.HostRules)
+
+	hostRulesErrors, hostRulesValid := validators.ValidateHostRules(hostRules)
+
+	a.False(hostRulesValid)
+
+	a.Equal(
+		models.ModelValidationError{
+			models.FieldValidationError{
+				Name: "host",
+				Errors: []models.ValidationError{
+					{TranslationKey: "errors.hostRules.host.tooLong"},
+				},
+			},
+		},
+		hostRulesErrors,
+	)
+}
+
+func TestHostRulesValidate_InvalidPatternHost(t *testing.T) {
+	a := assert.New(t)
+
+	hostRules := factories.
+		HostRulesFactory.
+		MustCreateWithOption(map[string]interface{}{
+			"Host": "-",
+		}).(models.HostRules)
+
+	hostRulesErrors, hostRulesValid := validators.ValidateHostRules(hostRules)
+
+	a.False(hostRulesValid)
+
+	a.Equal(
+		models.ModelValidationError{
+			models.FieldValidationError{
+				Name: "host",
+				Errors: []models.ValidationError{
+					{TranslationKey: "errors.hostRules.host.invalidPattern"},
+				},
+			},
+		},
+		hostRulesErrors,
+	)
+}
+
 func TestHostRulesValidate_InvalidDefaultTarget(t *testing.T) {
 	a := assert.New(t)
 
