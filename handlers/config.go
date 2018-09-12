@@ -9,6 +9,7 @@ import (
 	"github.com/c0va23/redirector/restapi/operations/config"
 	"github.com/c0va23/redirector/restapi/operations/redirect"
 	"github.com/c0va23/redirector/store"
+	"github.com/c0va23/redirector/validators"
 )
 
 // ConfigHandlers implement methods into restapi
@@ -49,6 +50,10 @@ func (configHandler *ConfigHandlers) CreateHostRulesHandler(
 	params config.CreateHostRulesParams,
 	_principal interface{},
 ) middleware.Responder {
+	if hostRulesError, valid := validators.ValidateHostRules(params.HostRules); !valid {
+		return config.NewCreateHostRulesUnprocessableEntity().WithPayload(hostRulesError)
+	}
+
 	err := configHandler.store.CreateHostRules(params.HostRules)
 
 	switch err {
@@ -73,6 +78,10 @@ func (configHandler *ConfigHandlers) UpdateHostRulesHandler(
 	params config.UpdateHostRulesParams,
 	_principal interface{},
 ) middleware.Responder {
+	if hostRulesError, valid := validators.ValidateHostRules(params.HostRules); !valid {
+		return config.NewUpdateHostRulesUnprocessableEntity().WithPayload(hostRulesError)
+	}
+
 	err := configHandler.store.UpdateHostRules(params.Host, params.HostRules)
 
 	switch err {

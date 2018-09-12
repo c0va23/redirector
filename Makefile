@@ -15,7 +15,15 @@ deps:
 	dep ensure -vendor-only
 
 gen-swagger: bin/swagger
-	bin/swagger generate server -f api.yml
+	bin/swagger generate server \
+		--model FieldValidationError \
+		--model Locales \
+		--model LocaleTranslations \
+		--model ModelValidationError \
+		--model ServerError \
+		--model Translation \
+		--model ValidationError \
+		-f api.yml
 
 lint:
 	go vet ./...

@@ -30,7 +30,7 @@ func TestBuildLocales_DefaultLocale(t *testing.T) {
 
 	haveDefaultLocale := false
 	for _, localeTranslations := range translations {
-		if localeTranslations.Default {
+		if localeTranslations.DefaultLocale {
 			haveDefaultLocale = true
 			break
 		}
@@ -60,7 +60,7 @@ func defaultLocaleTranslations() models.LocaleTranslations {
 	}
 
 	for _, localeTranslations := range translations {
-		if localeTranslations.Default {
+		if localeTranslations.DefaultLocale {
 			return localeTranslations
 		}
 	}

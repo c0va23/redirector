@@ -1,2 +1,14 @@
 [errors]
 required = 'Поле обязательное'
+
+"hostRules.host.tooLong" = "Хост должен быть короче 255 символов"
+"hostRules.host.invalidPattern" = "Не валидный хост"
+
+"target.httpCode.outOfRange" = "Значение должно быть между 300 и 399 включительно"
+
+"rule.resolver.unknown" = "Допустимые значения: simple и pattern"
+"rule.sourcePath.invalidPattern" = "Некорректное регулярное выражение"
+"rule.activeTo.tooLate" = "Слишком поздно"
+
+"target.path.missedPlaceholder" = "Отсутствует местозаполнитель"
+"target.path.invalidPlaceholderIndex" = "Недействительный индекс"

@@ -9,7 +9,8 @@ import (
 	"github.com/c0va23/redirector/models"
 )
 
-var placeholderRegexp = regexp.MustCompile("{(\\d+)}")
+// PlaceholderRegexp pattern of placeholder
+var PlaceholderRegexp = regexp.MustCompile("\\{(\\d+)\\}")
 
 var patternLogger = log.NewLeveledLogger("PatterResolver")
 
